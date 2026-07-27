@@ -27,25 +27,25 @@
       radial-gradient(900px 500px at 85% -8%, rgba(240,146,47,.07), transparent 60%),
       radial-gradient(700px 460px at -5% 110%, rgba(86,199,214,.06), transparent 60%),
       var(--bg);
-    color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.6;
+    color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.5;
     -webkit-font-smoothing:antialiased; min-height:100vh;
   }
-  .wrap{max-width:940px; margin:0 auto; padding:28px 20px 64px}
+  .wrap{max-width:1060px; margin:0 auto; padding:22px 20px 36px}
 
   /* ---- masthead ---- */
   header.slate{
     border:1px solid var(--line-2); border-radius:var(--radius);
     background:linear-gradient(180deg,var(--bg-2),var(--inset));
-    padding:22px 24px; display:flex; align-items:flex-end; justify-content:space-between;
+    padding:18px 20px; display:flex; align-items:flex-end; justify-content:space-between;
     gap:18px; flex-wrap:wrap;
   }
-  .brand{max-width:60ch}
+  .brand{flex:1 1 auto}
   .eyebrow-top{
     font-family:var(--mono); font-size:11px; letter-spacing:.2em;
-    text-transform:uppercase; color:var(--amber); margin:0 0 12px;
+    text-transform:uppercase; color:var(--amber); margin:0 0 8px;
   }
   header.slate h1{
-    font-family:var(--display); font-weight:400; font-size:clamp(36px,7vw,64px);
+    font-family:var(--display); font-weight:400; font-size:clamp(32px,5.2vw,54px);
     letter-spacing:.02em; line-height:.9; margin:0; color:var(--ink); text-transform:uppercase;
   }
   header.slate h1 .arrow{color:var(--amber)}
@@ -55,71 +55,78 @@
   @media (max-width:600px){ .meta{text-align:left} }
 
   .lede{
-    font-size:18px; color:var(--dim); max-width:64ch; margin:22px 2px 0; line-height:1.6;
+    font-size:16px; color:var(--dim); max-width:70ch; margin:14px 2px 0; line-height:1.55;
   }
   .lede em{color:var(--ink); font-style:normal}
   .src{
-    margin:22px 2px 0; font-family:var(--mono); font-size:12px; color:var(--faint); line-height:1.7;
+    margin:8px 2px 0; font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.6;
   }
   .src a{color:var(--dim)}
 
   /* ---- chapter strip signature ---- */
   .strip{
-    margin-top:16px; border:1px solid var(--line); border-radius:var(--radius);
-    background:var(--inset); padding:10px 12px;
+    margin-top:12px; border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--inset); padding:8px 10px;
     display:flex; align-items:center; gap:8px; flex-wrap:wrap;
   }
   .strip a{
     flex:1; min-width:120px; text-decoration:none;
     border:1px solid var(--line-2); border-radius:2px; background:var(--bg-3);
-    padding:9px 11px; transition:.15s ease;
-    display:flex; flex-direction:column; gap:3px;
+    padding:7px 10px; transition:.15s ease;
+    display:flex; align-items:baseline; gap:8px;
   }
   .strip a:hover{border-color:rgba(240,146,47,.5); background:linear-gradient(180deg,var(--amber-ghost),rgba(240,146,47,.04))}
   .strip .fn{font-family:var(--mono); font-size:10px; letter-spacing:.14em; color:var(--amber)}
   .strip .ft{font-size:12px; color:var(--dim); letter-spacing:.02em}
 
   /* ---- steps ---- */
-  main{margin-top:18px}
+  main{margin-top:12px}
   .step{
     border:1px solid var(--line); border-radius:var(--radius);
-    background:var(--bg-2); padding:26px 26px 28px; margin-bottom:18px;
+    background:var(--bg-2); padding:18px 20px 20px; margin-bottom:12px;
   }
   .eyebrow{font-family:var(--mono); font-size:10.5px; letter-spacing:.22em;
-    text-transform:uppercase; color:var(--faint); margin:0 0 16px;
+    text-transform:uppercase; color:var(--faint); margin:0 0 10px;
     display:flex; align-items:center; gap:12px}
   .eyebrow .tc{color:var(--amber)}
   .eyebrow .bar{height:1px; background:var(--line); flex:1}
   .step h2{
-    font-family:var(--body); font-weight:600; font-size:clamp(21px,3.4vw,28px);
-    letter-spacing:-.01em; line-height:1.2; margin:0 0 6px;
+    font-family:var(--body); font-weight:600; font-size:clamp(19px,2.8vw,24px);
+    letter-spacing:-.01em; line-height:1.2; margin:0 0 5px;
   }
-  .intro{color:var(--dim); max-width:64ch; margin:0 0 20px}
+  .intro{color:var(--dim); max-width:74ch; margin:0 0 14px; font-size:14.5px}
   .intro em{color:var(--ink); font-style:normal}
 
-  ol.actions{list-style:none; margin:0; padding:0; counter-reset:act}
+  /* action items sit side by side so a step reads in one screenful */
+  ol.actions{
+    list-style:none; margin:0; padding:0; counter-reset:act;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px;
+  }
   ol.actions li{
     counter-increment:act; position:relative;
-    padding:16px 18px 16px 52px; background:var(--inset);
-    border:1px solid var(--line-2); border-radius:var(--radius); margin-bottom:10px;
+    padding:13px 14px 14px 40px; background:var(--inset);
+    border:1px solid var(--line-2); border-radius:var(--radius);
+    display:flex; flex-direction:column;
   }
   ol.actions li::before{
     content:counter(act,decimal-leading-zero); position:absolute;
-    left:18px; top:16px; font-family:var(--mono); font-size:12px; color:var(--amber);
+    left:14px; top:13px; font-family:var(--mono); font-size:11.5px; color:var(--amber);
   }
-  ol.actions li b{color:var(--ink); font-weight:600}
-  ol.actions li .sub{display:block; margin-top:6px; font-size:14px; color:var(--dim)}
+  ol.actions li b{color:var(--ink); font-weight:600; font-size:14.5px}
+  ol.actions li .sub{display:block; margin-top:5px; font-size:13.5px; color:var(--dim)}
 
-  /* tool link sitting inside its own action box */
+  /* tool link sitting inside its own action box — margin-top:auto aligns
+     buttons along the bottom of the row regardless of text length */
   ol.actions a.btn{
-    margin-top:14px; padding:11px 18px; font-size:13px;
+    margin-top:auto; align-self:flex-start; padding:9px 14px; font-size:12px;
     box-shadow:0 4px 16px rgba(240,146,47,.18);
   }
+  ol.actions li:has(a.btn) .sub{margin-bottom:12px}
 
   a.btn{
-    display:inline-flex; align-items:center; gap:10px; margin-top:18px;
-    padding:14px 22px; background:var(--amber); color:#1A1206;
-    font-family:var(--mono); font-weight:600; font-size:14px; letter-spacing:.03em;
+    display:inline-flex; align-items:center; gap:8px; margin-top:14px;
+    padding:12px 18px; background:var(--amber); color:#1A1206;
+    font-family:var(--mono); font-weight:600; font-size:13px; letter-spacing:.03em;
     text-decoration:none; border-radius:var(--radius); border:1px solid var(--amber);
     box-shadow:0 6px 22px rgba(240,146,47,.22); transition:.15s ease; line-height:1;
   }
@@ -131,40 +138,41 @@
   @media (prefers-reduced-motion:reduce){a.btn{transition:none}}
 
   .tip{
-    margin-top:18px; font-size:14px; color:var(--dim);
-    padding-left:14px; border-left:2px solid var(--line-2);
+    margin:12px 0 0; font-size:13.5px; color:var(--dim);
+    padding-left:12px; border-left:2px solid var(--line-2);
   }
   .tip b{color:var(--amber); font-weight:600}
 
   /* ---- verdict ---- */
-  .verdict{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:2px}
+  .verdict{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:2px}
   .card{
     background:var(--inset); border:1px solid var(--line-2);
-    border-radius:var(--radius); padding:20px;
+    border-radius:var(--radius); padding:14px 16px;
   }
   .card h3{
     font-family:var(--mono); font-size:10.5px; letter-spacing:.2em;
-    text-transform:uppercase; margin:0 0 14px;
+    text-transform:uppercase; margin:0 0 10px;
     display:flex; align-items:center; gap:10px;
   }
   .card h3::after{content:""; height:1px; background:var(--line); flex:1}
   .card.pro h3{color:var(--amber)}
   .card.con h3{color:var(--cyan)}
-  .card ul{margin:0; padding-left:18px}
-  .card li{margin-bottom:9px; font-size:14px; color:var(--dim); line-height:1.5}
+  .card ul{margin:0; padding-left:16px}
+  .card li{margin-bottom:6px; font-size:13.5px; color:var(--dim); line-height:1.45}
+  .card li:last-child{margin-bottom:0}
   .card.pro li::marker{color:var(--amber)}
   .card.con li::marker{color:var(--cyan)}
 
   footer{
-    margin-top:40px; padding-top:22px; border-top:1px solid var(--line);
-    color:var(--faint); font-size:12px; font-family:var(--mono); line-height:1.7;
+    margin-top:20px; padding-top:14px; border-top:1px solid var(--line);
+    color:var(--faint); font-size:11.5px; font-family:var(--mono); line-height:1.6;
   }
   footer a{color:var(--dim)}
 
   @media (max-width:600px){
     .verdict{grid-template-columns:1fr}
-    header.slate{padding:20px}
-    .step{padding:22px 18px 24px}
+    header.slate{padding:16px}
+    .step{padding:16px 14px 18px}
   }
   @media (prefers-reduced-motion:no-preference){
     .step{animation:rise .5s ease both}
@@ -206,9 +214,9 @@
       <h2>Lock your references first</h2>
       <p class="intro">Most people skip straight to generating shots, then fight to keep characters, style, and locations consistent across clips. The fix is to settle those <em>before</em> any video exists.</p>
       <ol class="actions">
-        <li><b>Build a style reference sheet.</b><span class="sub">A single image that defines the look — color grade, lighting mood, lens feel, overall aesthetic you want every shot to share.</span><a class="btn" href="style-prompt-builder.html">Style reference sheet builder <span class="btn-arrow">→</span></a></li>
-        <li><b>Build a location reference sheet.</b><span class="sub">Pin down the setting so the environment stays the same from panel to panel.</span><a class="btn" href="location-prompt-builder.html">Location reference sheet builder <span class="btn-arrow">→</span></a></li>
-        <li><b>Build a character reference sheet.</b><span class="sub">Define any recurring subjects so they don’t drift across shots.</span><a class="btn" href="character-prompt-builder.html">Character reference sheet builder <span class="btn-arrow">→</span></a></li>
+        <li><b>Build a style reference sheet.</b><span class="sub">A single image that defines the look — color grade, lighting mood, lens feel, overall aesthetic you want every shot to share.</span><a class="btn" href="style-prompt-builder.html">Style sheet builder <span class="btn-arrow">→</span></a></li>
+        <li><b>Build a location reference sheet.</b><span class="sub">Pin down the setting so the environment stays the same from panel to panel.</span><a class="btn" href="location-prompt-builder.html">Location sheet builder <span class="btn-arrow">→</span></a></li>
+        <li><b>Build a character reference sheet.</b><span class="sub">Define any recurring subjects so they don’t drift across shots.</span><a class="btn" href="character-prompt-builder.html">Character sheet builder <span class="btn-arrow">→</span></a></li>
       </ol>
       <p class="tip"><b>Why it matters →</b> these sheets are what you’ll feed into the storyboard step to enforce consistency for free.</p>
     </section>
