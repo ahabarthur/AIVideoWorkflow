@@ -1,0 +1,1314 @@
+<!-- LOOK BOOK — a style reference-sheet prompt builder. Single-file, no external state. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LOOK BOOK — Style Reference Prompt Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0A0E0F; --bg-2:#0F1517; --bg-3:#141C1E; --inset:#0C1213;
+    --line:rgba(236,230,216,.10); --line-2:rgba(236,230,216,.20);
+    --ink:#ECE6D8; --dim:#94A19E; --faint:#5C6866;
+    --amber:#F0922F; --amber-2:#F6A94E; --amber-ghost:rgba(240,146,47,.14);
+    --cyan:#56C7D6; --cyan-ghost:rgba(86,199,214,.14);
+    --radius:4px;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    --body:"Inter",system-ui,sans-serif;
+    --display:"Anton",Impact,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(900px 500px at 85% -8%, rgba(240,146,47,.07), transparent 60%),
+      radial-gradient(700px 460px at -5% 110%, rgba(86,199,214,.06), transparent 60%),
+      var(--bg);
+    color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 64px}
+
+  /* ---- masthead ---- */
+  header.slate{
+    border:1px solid var(--line-2); border-radius:var(--radius);
+    background:linear-gradient(180deg,var(--bg-2),var(--inset));
+    padding:18px 20px; display:flex; align-items:flex-end; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:baseline; gap:14px}
+  .brand-group{display:flex; align-items:center; gap:22px; flex-wrap:wrap}
+  .return-btn{
+    display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+    font-family:var(--mono); font-size:14px; font-weight:600; letter-spacing:.04em;
+    color:#1A1206; background:var(--amber); border:1px solid var(--amber);
+    border-radius:var(--radius); padding:14px 22px; line-height:1; cursor:pointer;
+    box-shadow:0 6px 22px rgba(240,146,47,.22); transition:.15s ease; white-space:nowrap;
+  }
+  .return-btn:hover{background:var(--amber-2); border-color:var(--amber-2); transform:translateY(-1px);
+    box-shadow:0 8px 26px rgba(240,146,47,.3)}
+  .return-btn:focus-visible{outline:none; box-shadow:0 0 0 3px var(--cyan-ghost)}
+  .return-btn .ra{font-size:17px; line-height:1}
+  @media (max-width:560px){ .return-btn{width:100%; justify-content:center} }
+  .brand h1{
+    font-family:var(--display); font-weight:400; font-size:clamp(34px,7vw,58px);
+    letter-spacing:.04em; line-height:.85; margin:0; color:var(--ink);
+  }
+  .brand h1 .ct{color:var(--amber)}
+  .brand .sub{font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--dim)}
+  .meta{font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--faint); text-align:right; line-height:1.7}
+  .meta b{color:var(--cyan); font-weight:500}
+  .btns-rnd{justify-content:flex-end; margin-bottom:12px}
+  .rnd{background:var(--amber); border-color:var(--amber); color:#1A1206; font-weight:600}
+  .rnd:hover{background:var(--amber-2); border-color:var(--amber-2)}
+
+  /* ---- filmstrip signature ---- */
+  .strip{
+    margin-top:14px; border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--inset); padding:10px 12px;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .frames{display:grid; grid-template-columns:repeat(var(--fc,15),1fr); gap:5px; flex:1; min-width:240px}
+  .frame{
+    aspect-ratio:16/10; border:1px solid var(--line-2); border-radius:2px;
+    background:var(--bg-3); position:relative; overflow:hidden;
+    font-family:var(--mono); font-size:9px; color:var(--faint);
+    display:flex; align-items:flex-end; justify-content:flex-start; padding:2px 3px;
+    transition:background .25s ease, border-color .25s ease, color .25s ease;
+  }
+  .frame.lit{
+    background:linear-gradient(180deg,var(--amber-ghost),rgba(240,146,47,.04));
+    border-color:rgba(240,146,47,.5); color:var(--amber-2);
+  }
+  .frame.cursor{border-color:var(--cyan); box-shadow:0 0 0 1px var(--cyan-ghost) inset}
+  .pct{font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:var(--dim);
+    white-space:nowrap}
+  .pct b{color:var(--amber); font-weight:500}
+
+  /* ---- layout ---- */
+  .grid{display:grid; grid-template-columns:1.05fr .95fr; gap:18px; margin-top:18px; align-items:start}
+  @media (max-width:920px){ .grid{grid-template-columns:1fr} }
+
+  .panel{border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--bg-2); padding:18px}
+  .panel + .panel{margin-top:18px}
+
+  .eyebrow{font-family:var(--mono); font-size:10.5px; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--faint); margin:0 0 14px;
+    display:flex; align-items:center; gap:8px}
+  .eyebrow .bar{height:1px; background:var(--line); flex:1}
+
+  .field{margin-bottom:16px}
+  .field:last-child{margin-bottom:0}
+  label.lab{display:flex; align-items:baseline; gap:8px; margin-bottom:7px}
+  label.lab .n{font-family:var(--mono); font-size:11px; color:var(--amber); letter-spacing:.08em}
+  label.lab .t{font-size:13px; font-weight:600; letter-spacing:.02em}
+  label.lab .h{font-size:11.5px; color:var(--dim); font-weight:400}
+
+  input[type=text], textarea{
+    width:100%; background:var(--inset); color:var(--ink);
+    border:1px solid var(--line-2); border-radius:var(--radius);
+    padding:10px 12px; font-family:var(--body); font-size:14px; resize:vertical;
+  }
+  input[type=text]::placeholder, textarea::placeholder{color:var(--faint)}
+  input[type=text]:focus-visible, textarea:focus-visible{
+    outline:none; border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-ghost)}
+  textarea{min-height:64px; line-height:1.45}
+
+  .imgtog{display:flex; align-items:center; gap:8px; margin-top:8px; cursor:pointer; user-select:none;
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim)}
+  .imgtog:hover{color:var(--ink)}
+  .imgtog input{width:14px; height:14px; accent-color:var(--amber); cursor:pointer; flex:0 0 auto}
+
+  /* chips */
+  .chips{display:flex; flex-wrap:wrap; gap:7px}
+  .chip{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--dim); background:var(--bg-3); border:1px solid var(--line-2);
+    border-radius:999px; padding:7px 13px; cursor:pointer; transition:.15s ease;
+    user-select:none;
+  }
+  .chip:hover{border-color:var(--line-2); color:var(--ink); transform:translateY(-1px)}
+  .chip[aria-pressed=true]{
+    color:#1A1206; background:var(--amber); border-color:var(--amber); font-weight:500}
+  .chip.q[aria-pressed=true]{background:var(--cyan); border-color:var(--cyan); color:#06181B}
+  .chip:focus-visible{outline:none; box-shadow:0 0 0 3px var(--cyan-ghost)}
+  .lib-group{font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--amber); margin:14px 0 7px}
+  .lib-group:first-child{margin-top:0}
+  .tri[data-state="inc"]{color:#1A1206; background:var(--amber); border-color:var(--amber); font-weight:500}
+  .tri[data-state="exc"]{color:#E5664A; border-color:#E5664A; text-decoration:line-through}
+  .tri[data-state="inc"]::before{content:"+ "}
+  .tri[data-state="exc"]::before{content:"− "}
+  .lib-hint{font-family:var(--mono); font-size:10.5px; color:var(--faint); margin:14px 0 0}
+
+  /* toggles */
+  .toggle{
+    display:flex; align-items:center; gap:11px; width:100%;
+    background:var(--inset); border:1px solid var(--line); border-radius:var(--radius);
+    padding:10px 12px; cursor:pointer; text-align:left; color:var(--ink);
+    font-family:var(--body); font-size:13px; margin-bottom:8px; transition:.15s ease;
+  }
+  .toggle:last-child{margin-bottom:0}
+  .toggle:hover{border-color:var(--line-2)}
+  .toggle:focus-visible{outline:none; box-shadow:0 0 0 3px var(--amber-ghost)}
+  .sw{flex:0 0 auto; width:34px; height:19px; border-radius:999px; position:relative;
+    background:var(--bg-3); border:1px solid var(--line-2); transition:.18s ease}
+  .sw::after{content:""; position:absolute; top:50%; left:2px; transform:translateY(-50%);
+    width:13px; height:13px; border-radius:50%; background:var(--faint); transition:.18s ease}
+  .toggle[aria-pressed=true] .sw{background:var(--amber-ghost); border-color:var(--amber)}
+  .toggle[aria-pressed=true] .sw::after{left:17px; background:var(--amber)}
+  .toggle .tl{font-weight:500}
+  .toggle .td{display:block; font-size:11.5px; color:var(--dim); margin-top:1px}
+
+  /* output */
+  .out-wrap{position:sticky; top:18px}
+  .out-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px}
+  .out-head .eyebrow{margin:0}
+  .optbox{display:flex; align-items:center; gap:9px; margin:0 0 12px; cursor:pointer;
+    font-size:12.5px; color:var(--ink); font-family:var(--body); user-select:none;
+    border:1px solid var(--line); border-radius:var(--radius); background:var(--inset); padding:9px 12px;}
+  .optbox:hover{border-color:var(--line-2)}
+  .optbox input{width:16px; height:16px; accent-color:var(--amber); cursor:pointer; flex:0 0 auto;}
+  .optbox input:focus-visible{outline:none; box-shadow:0 0 0 3px var(--amber-ghost)}
+  .btns{display:flex; gap:8px}
+  .btns-io{justify-content:flex-end; margin:10px 0 2px}
+  .btns-under{justify-content:flex-end; margin-top:8px}
+  button.act{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase;
+    border-radius:var(--radius); padding:9px 15px; cursor:pointer; border:1px solid var(--line-2);
+    background:var(--bg-3); color:var(--ink); transition:.15s ease;
+  }
+  button.act:hover{border-color:var(--ink); transform:translateY(-1px)}
+  button.act:focus-visible{outline:none; box-shadow:0 0 0 3px var(--cyan-ghost)}
+  button.copy{background:var(--amber); border-color:var(--amber); color:#1A1206; font-weight:500}
+  button.copy:hover{background:var(--amber-2); border-color:var(--amber-2)}
+  button.copy.done{background:var(--cyan); border-color:var(--cyan); color:#06181B}
+
+  .out{
+    border:1px solid var(--line-2); border-radius:var(--radius);
+    background:repeating-linear-gradient(var(--inset),var(--inset) 27px,rgba(236,230,216,.02) 27px,rgba(236,230,216,.02) 28px);
+    padding:16px; font-family:var(--mono); font-size:12.5px; line-height:1.55;
+    color:var(--ink); white-space:pre-wrap; word-break:break-word; min-height:80px; max-height:190px; overflow:auto;
+  }
+  .out .ph{color:var(--amber-2)}
+  .foot{font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; color:var(--faint);
+    margin-top:10px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px}
+
+  .act.done{border-color:var(--cyan); color:var(--cyan)}
+  .saved-panel{margin-top:18px}
+  .saved-item{display:flex; align-items:stretch; gap:8px; margin-bottom:8px}
+  .saved-item:last-child{margin-bottom:0}
+  .saved-load{flex:1; text-align:left; display:flex; justify-content:space-between; align-items:center; gap:12px;
+    background:var(--inset); border:1px solid var(--line-2); border-radius:var(--radius); padding:11px 13px;
+    cursor:pointer; color:var(--ink); font-family:var(--body); transition:.15s ease}
+  .saved-load:hover{border-color:var(--amber); transform:translateY(-1px)}
+  .saved-load .sname{font-weight:600; font-size:13.5px}
+  .saved-load .sdate{font-family:var(--mono); font-size:10.5px; color:var(--dim); letter-spacing:.04em; white-space:nowrap}
+  .saved-del{flex:0 0 auto; width:42px; border:1px solid var(--line-2); border-radius:var(--radius);
+    background:var(--bg-3); color:var(--dim); cursor:pointer; font-size:13px; transition:.15s ease}
+  .saved-del:hover{border-color:#E5664A; color:#E5664A}
+  .saved-load:focus-visible,.saved-del:focus-visible{outline:none; box-shadow:0 0 0 3px var(--amber-ghost)}
+  .empty{font-family:var(--mono); font-size:12px; color:var(--faint); padding:6px 2px}
+  .oplinks{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:10px}
+  .oplabel{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); margin-right:2px}
+  .oplink{font-family:var(--mono); font-size:11.5px; letter-spacing:.05em; text-decoration:none; color:var(--ink);
+    background:var(--bg-3); border:1px solid var(--line-2); border-radius:999px; padding:7px 13px; transition:.15s ease}
+  .oplink:hover{border-color:var(--amber); color:var(--amber); transform:translateY(-1px)}
+  .oplink:focus-visible{outline:none; box-shadow:0 0 0 3px var(--amber-ghost)}
+  .preset-panel{margin-top:18px}
+  .preset-select{width:100%; color-scheme:dark; background:var(--inset); color:var(--ink);
+    border:1px solid var(--line-2); border-radius:var(--radius); padding:11px 12px;
+    font-family:var(--body); font-size:14px; cursor:pointer}
+  .preset-select:focus-visible{outline:none; border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-ghost)}
+
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+
+<div class="wrap">
+  <header class="slate">
+    <div class="brand-group">
+      <div class="brand">
+        <h1>LOOK<span class="ct">·</span>BOOK</h1>
+        <div class="sub">Style Reference<br>Prompt Builder</div>
+      </div>
+      <a class="return-btn" href="index.html">
+        <span class="ra">←</span> Return to Workflow
+      </a>
+    </div>
+    <div class="meta">
+      Project <b id="mProject">untitled look</b><br>
+      Format <b id="mFmt">16:9</b> · <b id="mGrade">teal &amp; orange</b> · <b id="mRes">2K</b>
+    </div>
+  </header>
+
+  <div class="strip" aria-hidden="true">
+    <div class="frames" id="frames"></div>
+    <div class="pct">LOOK <b id="pctNum">0%</b> LOCKED</div>
+  </div>
+
+  <div class="grid">
+    <!-- ============ CONTROLS ============ -->
+    <section>
+      <div class="panel">
+        <p class="eyebrow">Project <span class="bar"></span></p>
+        <div class="field" style="margin-bottom:0">
+          <label class="lab" for="sheetName"><span class="n">✦</span><span class="t">Sheet name</span><span class="h">your title for this style sheet</span></label>
+          <input type="text" id="sheetName" placeholder="DUST &amp; GOLD — style reference sheet">
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow">The Sheet · specs <span class="bar"></span></p>
+        <div class="field">
+          <label class="lab"><span class="n">▦</span><span class="t">Format</span><span class="h">aspect ratio of the sheet</span></label>
+          <div class="chips" id="format"></div>
+        </div>
+        <div class="field">
+          <label class="lab"><span class="n">▢</span><span class="t">Layout</span><span class="h">how the sheet is arranged</span></label>
+          <div class="chips" id="background"></div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="lab"><span class="n">▰</span><span class="t">Resolution</span><span class="h">target output quality</span></label>
+          <div class="chips" id="resolution"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow">The Look <span class="bar"></span></p>
+
+        <div class="field">
+          <label class="lab" for="concept"><span class="n">01</span><span class="t">The look in one line</span><span class="h">what this world feels like</span></label>
+          <textarea id="concept" placeholder="Sun-bleached desert epic — heat haze, dust in every beam of light…"></textarea>
+        </div>
+        <div class="field">
+          <label class="lab" for="lookName"><span class="n">02</span><span class="t">Look name / ID</span><span class="h">shown as the sheet title</span></label>
+          <input type="text" id="lookName" placeholder="Dust &amp; Gold; Cold Steel; Midnight Neon">
+        </div>
+        <div class="field">
+          <label class="lab" for="lightDesc"><span class="n">03</span><span class="t">Lighting character</span><span class="h">the quality &amp; direction of light</span></label>
+          <textarea id="lightDesc" placeholder="Hard low sun, long shadows, strong backlight with visible god rays"></textarea>
+        </div>
+        <div class="field">
+          <label class="lab" for="timeWeather"><span class="n">04</span><span class="t">Time of day &amp; weather</span><span class="h">when and in what conditions</span></label>
+          <input type="text" id="timeWeather" placeholder="Golden hour, clear sky, dry wind and drifting dust">
+        </div>
+        <div class="field">
+          <label class="lab" for="lensDesc"><span class="n">05</span><span class="t">Camera &amp; lens feel</span><span class="h">focal length, depth, movement</span></label>
+          <textarea id="lensDesc" placeholder="Anamorphic wides, shallow depth of field, subtle handheld drift"></textarea>
+        </div>
+        <div class="field">
+          <label class="lab" for="texture"><span class="n">06</span><span class="t">Film stock, grain &amp; texture</span><span class="h">the surface of the image</span></label>
+          <input type="text" id="texture" placeholder="35mm Kodak grain, halation on highlights, soft bloom">
+        </div>
+        <div class="field">
+          <label class="lab" for="atmosphere"><span class="n">07</span><span class="t">Atmosphere &amp; FX</span><span class="h">what lives in the air</span></label>
+          <input type="text" id="atmosphere" placeholder="Heat shimmer, floating dust motes, distant haze">
+        </div>
+        <div class="field">
+          <label class="lab" for="composition"><span class="n">08</span><span class="t">Composition rules</span><span class="h">how shots are framed</span></label>
+          <input type="text" id="composition" placeholder="Centred symmetry, low horizon, lots of negative sky">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="lab" for="touchstones"><span class="n">09</span><span class="t">Reference touchstones</span><span class="h">films / photographers to echo</span></label>
+          <input type="text" id="touchstones" placeholder="Lawrence of Arabia, Roger Deakins, Gregory Crewdson">
+          <label class="imgtog" for="refImgChk" style="margin-top:10px">
+            <input type="checkbox" id="refImgChk"><span>Reference image URL</span>
+          </label>
+          <input type="text" id="refImg" placeholder="Image URL — the model will match this look & grade" style="margin-top:8px; display:none">
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow">Colour &amp; medium <span class="bar"></span></p>
+        <div class="field">
+          <label class="lab"><span class="n">10</span><span class="t">Medium</span><span class="h">preset, or type custom</span></label>
+          <div class="chips" id="artStyle" data-single></div>
+          <input type="text" id="styleCustom" placeholder="…or describe a custom medium (overrides preset)" style="margin-top:8px">
+        </div>
+        <div class="field">
+          <label class="lab"><span class="n">11</span><span class="t">Colour grade family</span><span class="h">the overall grade direction</span></label>
+          <div class="chips" id="gradeFamily"></div>
+        </div>
+        <div class="field">
+          <label class="lab" for="palette"><span class="n">12</span><span class="t">Palette</span><span class="h">2–4 colours, held across the look</span></label>
+          <input type="text" id="palette" placeholder="sun-bleached ochre + deep shadow blue">
+          <div class="chips" id="paletteQ" style="margin-top:8px"></div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="lab"><span class="n">13</span><span class="t">Style library</span><span class="h">era, genre &amp; medium flavour</span></label>
+          <div class="lib-body" id="styleLib" style="margin-top:4px"></div>
+          <p class="lib-hint">Tap to include (+), again to exclude (−), again to clear.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow">Sheet content <span class="bar"></span></p>
+        <div class="field">
+          <label class="lab"><span class="n">14</span><span class="t">Lighting studies</span><span class="h">setups shown on the sheet</span></label>
+          <div class="chips" id="lightChips" data-multi></div>
+        </div>
+        <div class="field">
+          <label class="lab"><span class="n">15</span><span class="t">Lens studies</span><span class="h">focal lengths in the strip</span></label>
+          <div class="chips" id="lensChips" data-multi></div>
+        </div>
+        <div class="field">
+          <label class="lab"><span class="n">16</span><span class="t">Sample tiles</span><span class="h">extra study tiles on the sheet</span></label>
+          <div class="chips" id="tileChips" data-multi></div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="lab"><span class="n">17</span><span class="t">Exclude</span><span class="h">things to keep off the sheet</span></label>
+          <div class="chips" id="excludeChips"></div>
+          <input type="text" id="excludeCustom" placeholder="…other things to exclude (comma-separated)" style="margin-top:8px">
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow">Sheet Options · on / off <span class="bar"></span></p>
+        <div id="toggles"></div>
+      </div>
+    </section>
+
+    <!-- ============ OUTPUT ============ -->
+    <section>
+      <div class="out-wrap">
+        <div class="panel">
+          <div class="btns btns-rnd">
+            <button class="act rnd" id="randomBtn" type="button">🎲 Random look</button>
+          </div>
+          <div class="out-head">
+            <p class="eyebrow">Rendered Prompt <span class="bar"></span></p>
+            <div class="btns">
+              <button class="act" id="reset" type="button">Reset</button>
+              <button class="act" id="save" type="button">Save</button>
+            </div>
+          </div>
+          <div class="btns btns-io">
+            <button class="act" id="importBtn" type="button">Import .json</button>
+            <button class="act" id="exportBtn" type="button">Export .json</button>
+          </div>
+          <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+          <label class="optbox" for="helperChk">
+            <input type="checkbox" id="helperChk" checked>
+            <span>Add style-sheet prompt helper</span>
+          </label>
+          <div class="out" id="out" aria-live="polite"></div>
+          <div class="btns btns-under">
+            <button class="act copy" id="copy" type="button">Copy prompt</button>
+          </div>
+          <div class="oplinks">
+            <span class="oplabel">Open &amp; paste:</span>
+            <a class="oplink" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">ChatGPT ↗</a>
+            <a class="oplink" href="https://higgsfield.ai" target="_blank" rel="noopener noreferrer">Higgsfield ↗</a>
+            <a class="oplink" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini ↗</a>
+          </div>
+          <div class="foot">
+            <span id="wc">0 words</span>
+            <span>Paste into Midjourney · nano-banana · Imagen</span>
+          </div>
+          <div class="out-head" style="margin-top:18px">
+            <p class="eyebrow">Single style frame prompt <span class="bar"></span></p>
+          </div>
+          <div class="out" id="out2"></div>
+          <div class="btns btns-under">
+            <button class="act copy" id="copy2" type="button">Copy</button>
+          </div>
+          <div class="out-head" style="margin-top:18px">
+            <p class="eyebrow">Style suffix · append to any prompt <span class="bar"></span></p>
+          </div>
+          <div class="out" id="out3"></div>
+          <div class="btns btns-under">
+            <button class="act copy" id="copy3" type="button">Copy</button>
+          </div>
+          <div class="out-head" style="margin-top:18px">
+            <p class="eyebrow">Apply look to a new shot <span class="bar"></span></p>
+          </div>
+          <div class="out" id="out4"></div>
+          <div class="btns btns-under">
+            <button class="act copy" id="copy4" type="button">Copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel saved-panel">
+    <p class="eyebrow">Saved looks <span class="bar"></span></p>
+    <div id="savedList"></div>
+  </section>
+
+  <section class="panel preset-panel">
+    <p class="eyebrow">Look presets <span class="bar"></span></p>
+    <select id="presetSelect" class="preset-select" aria-label="Load a look preset">
+      <option value="" disabled selected>Choose a look preset…</option>
+    </select>
+  </section>
+</div>
+
+<script type="text/plain" id="helperText">
+STYLE REFERENCE SHEET HELPER — look development
+
+WHAT THIS IS: a style reference sheet (a.k.a. look book / look-dev sheet) — one image that defines the visual language every shot in a production must share. It is NOT a story moment. It shows the LOOK itself — grade, light, texture, lens and atmosphere — sampled across a few neutral example frames so the treatment reads clearly on its own.
+
+SHEET ANATOMY:
+- Title: the look's name set cleanly across the top.
+- Hero style frame: one large example frame that shows the look at its most complete.
+- Lighting studies: a row of smaller frames showing the same treatment under different lighting setups.
+- Lens studies: a strip showing how the look behaves at different focal lengths and depths of field.
+- Colour swatches: a labelled strip of the core palette and the grade's shadow / midtone / highlight bias.
+- Texture samples (optional): close-ups of grain, halation, bloom and the image's surface quality.
+- Atmosphere samples (optional): haze, dust, smoke, rain and other in-air elements.
+- Material samples (optional): how skin, metal, fabric and foliage render under this grade.
+- Composition diagrams (optional): simple framing rules the look leans on.
+- Do / don't (optional): a paired comparison showing an on-model frame beside an off-model one.
+
+GOLDEN RULE: it is the SAME treatment every time. Lock the grade, the light quality, the lens character and the texture, and repeat them in every tile on the sheet. The subject may change between tiles — the look must not.
+
+TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not the story · sample the look across at least one wide, one mid and one close frame · state the grade in terms of shadow / midtone / highlight bias so it is reproducible · name real film stocks, lenses or photographers to anchor the look · keep on-image text minimal so labels can be added in layout afterward · if you have a reference image, instruct the model to match its grade and light closely.
+</script>
+
+<script>
+(function(){
+
+  // ---------- data ----------
+  var STYLE = [
+    {label:"Photoreal cinema", kw:"photorealistic cinematic frame, real optics, filmic dynamic range"},
+    {label:"35mm film", kw:"shot on 35mm film, organic grain, halation, photochemical colour"},
+    {label:"Digital cinema", kw:"modern digital cinema capture, clean shadows, wide latitude"},
+    {label:"Painterly concept art", kw:"digital matte painting, soft rendering, concept-art finish, visible brushwork"},
+    {label:"3D animated render", kw:"Pixar/DreamWorks 3D render, soft cinematic light, subsurface materials"},
+    {label:"2D animation", kw:"hand-drawn 2D animation, flat cel shading, painted backgrounds"},
+    {label:"Documentary photo", kw:"available-light reportage photography, natural colour, candid framing"},
+    {label:"Editorial fashion", kw:"high-end editorial photography, controlled strobe, immaculate retouch"}
+  ];
+  var PALETTES = ["sun-bleached ochre + shadow blue","teal + orange","desaturated slate + rust","neon magenta + cyan","warm amber + deep brown","cold blue + steel grey","earth tones + moss green","bone white + ink black"];
+  var FORMATS = ["16:9","2.39:1","3:2","4:3","1:1","4:5","9:16","21:9"];
+  var LAYOUTS = ["hero frame + tile grid","even grid of frames","contact-sheet strip","split hero + swatch column"];
+  var RESOLUTION = ["720p","1K","2K","4K","6K","8K"];
+  var GRADES = ["teal & orange","warm golden","cold blue","high-contrast bleach","muted pastel","rich saturated","monochrome","sepia / vintage"];
+  var LIGHTS = ["golden hour","harsh midday sun","overcast soft","blue hour","night / practicals","hard rim light","soft window light","firelight","neon spill"];
+  var LENSES = ["14mm ultra-wide","24mm wide","35mm","50mm","85mm portrait","135mm long","macro","anamorphic"];
+  var TILES = ["texture & grain","atmosphere & haze","material samples","skin tones","sky & horizon","foliage & landscape","architecture","composition diagrams"];
+
+  // Style library — era / genre / medium flavour applied as include / exclude.
+  var STYLELIB = [
+    {group:"Grade & finish", items:[
+      {label:"Crushed blacks", phrase:"crushed blacks with deep, dense shadow detail"},
+      {label:"Lifted shadows", phrase:"lifted milky shadows, low-contrast filmic toe"},
+      {label:"Halation", phrase:"warm halation blooming around highlights"},
+      {label:"Heavy grain", phrase:"pronounced organic film grain"},
+      {label:"Clean & clinical", phrase:"clean clinical rendering, no grain, precise edges"},
+      {label:"Bleach bypass", phrase:"bleach-bypass look, desaturated with harsh contrast"},
+      {label:"Split tone", phrase:"split toning — cool shadows against warm highlights"}
+    ]},
+    {group:"Optics", items:[
+      {label:"Anamorphic flare", phrase:"horizontal anamorphic lens flares and oval bokeh"},
+      {label:"Shallow depth", phrase:"very shallow depth of field, creamy background falloff"},
+      {label:"Deep focus", phrase:"deep focus, everything sharp from foreground to horizon"},
+      {label:"Vintage glass", phrase:"vintage uncoated glass, soft edges and low micro-contrast"},
+      {label:"Tilt-shift", phrase:"tilt-shift plane of focus"},
+      {label:"Vignetting", phrase:"natural lens vignetting toward the frame edges"}
+    ]},
+    {group:"Style · epic & historical", loc:"brief", items:[
+      {label:"David Lean Epic", phrase:"David Lean epic — vast landscapes, sweeping camera moves, grand scale"},
+      {label:"Sword-and-Sandal Epic", phrase:"sword-and-sandal epic — ancient empires, heroic battles, golden sunlight"},
+      {label:"Biblical Epic", phrase:"biblical epic — divine atmosphere, dramatic skies, reverent compositions"},
+      {label:"Historical Drama", phrase:"historical drama — authentic costumes, naturalistic lighting"},
+      {label:"Medieval Chronicle", phrase:"medieval chronicle — rugged realism, candlelight, weathered textures"}
+    ]},
+    {group:"Style · indie & art house", loc:"brief", items:[
+      {label:"A24 Indie", phrase:"A24 indie style — atmospheric, understated, emotionally complex"},
+      {label:"European Art Film", phrase:"European art film — contemplative pacing, visual symbolism"},
+      {label:"Festival Film", phrase:"festival film — naturalistic acting, handheld intimacy"},
+      {label:"Slow Cinema", phrase:"slow cinema — long takes, minimal dialogue"},
+      {label:"Experimental Film", phrase:"experimental film — abstract visuals, unconventional editing"}
+    ]},
+    {group:"Style · vintage & retro", loc:"brief", items:[
+      {label:"Silent Film", phrase:"silent film — expressive acting, monochrome imagery"},
+      {label:"1920s Cinema", phrase:"1920s cinema — ornate sets, theatrical staging"},
+      {label:"Film Noir", phrase:"film noir — high-contrast shadows, mystery"},
+      {label:"1950s Technicolor", phrase:"1950s Technicolor — vibrant colours, glamorous lighting"},
+      {label:"1970s Cinema", phrase:"1970s cinema — warm grain, zoom lenses, realism"},
+      {label:"1980s Cinema", phrase:"1980s cinema — neon colours, bold contrast"},
+      {label:"1990s Blockbuster", phrase:"1990s blockbuster — practical effects, energetic editing"}
+    ]},
+    {group:"Style · genre", loc:"brief", items:[
+      {label:"Western", phrase:"western — expansive landscapes, rugged heroes"},
+      {label:"Spaghetti Western", phrase:"spaghetti western — extreme close-ups, dusty atmosphere"},
+      {label:"Crime Thriller", phrase:"crime thriller — urban environments, suspenseful framing"},
+      {label:"Detective Mystery", phrase:"detective mystery — moody lighting, investigative tension"},
+      {label:"Psychological Thriller", phrase:"psychological thriller — unsettling imagery, subjective camera"},
+      {label:"Horror Film", phrase:"horror film — suspenseful shadows, unsettling atmosphere"},
+      {label:"Gothic Horror", phrase:"gothic horror — candlelight, castles, mist"},
+      {label:"Monster Movie", phrase:"monster movie — creature reveals, escalating dread"}
+    ]},
+    {group:"Style · sci-fi & fantasy", loc:"brief", items:[
+      {label:"Hard Science Fiction", phrase:"hard science fiction — realistic technology, believable physics"},
+      {label:"Space Opera", phrase:"space opera — epic scale, cosmic adventure"},
+      {label:"Cyberpunk", phrase:"cyberpunk — neon cities, rain-soaked streets"},
+      {label:"Dystopian Future", phrase:"dystopian future — oppressive environments, bleak tone"},
+      {label:"High Fantasy", phrase:"high fantasy — mythical landscapes, heroic quests"},
+      {label:"Dark Fantasy", phrase:"dark fantasy — mystical but ominous atmosphere"}
+    ]},
+    {group:"Style · animation", loc:"brief", items:[
+      {label:"Anime Feature", phrase:"anime feature film — expressive characters, cinematic composition"},
+      {label:"Animated Fantasy Adventure", phrase:"animated fantasy adventure — vibrant worlds, emotional storytelling"},
+      {label:"Stop-Motion Film", phrase:"stop-motion film — handcrafted textures, tactile detail"},
+      {label:"Painterly Animated", phrase:"painterly animated film — brushstroke aesthetics, storybook visuals"}
+    ]}
+  ];
+  var EXCLUDE = [
+    {label:"Recognisable faces", phrase:"recognisable hero characters or portrait subjects that pull focus from the treatment", on:false},
+    {label:"Story moments", phrase:"narrative story beats or dramatic action", on:false},
+    {label:"Text & watermarks", phrase:"text, captions, logos or watermarks", on:false},
+    {label:"Mixed grades", phrase:"any tile that drifts from the locked colour grade", on:false},
+    {label:"Blur / low detail", phrase:"blur, low detail or soft focus", on:false},
+    {label:"Busy collage", phrase:"cluttered collage layout with overlapping frames", on:false}
+  ];
+
+  // ---------- look presets ----------
+  var BIB_LIB = {"biblical epic — divine atmosphere, dramatic skies, reverent compositions":1, "warm halation blooming around highlights":1};
+  function P(o){ return o; }
+  var LIBRARY = [
+    P({ group:"Scripture", ref:"Exodus", sheetName:"DUST & GOLD — style sheet", lookName:"Dust & Gold",
+      concept:"a sun-scorched biblical epic where every beam of light carries dust",
+      lightDesc:"hard low sun, long raking shadows, strong backlight with visible god rays through dust",
+      timeWeather:"golden hour and harsh midday, dry wind, drifting sand",
+      lensDesc:"anamorphic wides for the landscape, long lenses compressing crowds, slow deliberate moves",
+      texture:"35mm Kodak grain, warm halation on highlights, gentle bloom",
+      atmosphere:"heat shimmer, suspended dust motes, distant haze",
+      composition:"low horizon, vast negative sky, tiny figures against scale",
+      touchstones:"Lawrence of Arabia, The Prince of Egypt, Roger Deakins",
+      palette:"sun-bleached ochre + shadow blue", grade:"warm golden", style:"35mm film",
+      lights:["golden hour","harsh midday sun","hard rim light"],
+      lenses:["24mm wide","50mm","135mm long","anamorphic"],
+      tiles:["texture & grain","atmosphere & haze","sky & horizon","skin tones"],
+      styleLib:BIB_LIB }),
+
+    P({ group:"Scripture", ref:"Genesis", sheetName:"THE FLOOD — style sheet", lookName:"The Flood",
+      concept:"a drowned world under endless storm, with one break of light on the horizon",
+      lightDesc:"flat stormlight, no direct sun, a single warm break in the cloud far off",
+      timeWeather:"perpetual rain, low black cloud, heavy swell",
+      lensDesc:"wide handheld coverage, water on the glass, unstable horizon",
+      texture:"heavy grain, desaturated silver, rain streaks across the frame",
+      atmosphere:"driving rain, sea spray, low mist over water",
+      composition:"horizon pushed high, small vessel lost in the frame",
+      touchstones:"The Revenant, Mother!, Emmanuel Lubezki",
+      palette:"desaturated slate + rust", grade:"cold blue", style:"Photoreal cinema",
+      lights:["overcast soft","blue hour","night / practicals"],
+      lenses:["14mm ultra-wide","24mm wide","35mm"],
+      tiles:["texture & grain","atmosphere & haze","sky & horizon","material samples"],
+      styleLib:BIB_LIB }),
+
+    P({ group:"Sci-fi", ref:"Cyberpunk", sheetName:"MIDNIGHT NEON — style sheet", lookName:"Midnight Neon",
+      concept:"a rain-slicked megacity at 3am, lit entirely by signage",
+      lightDesc:"no daylight — every source is a practical: neon, screens, sodium vapour, headlights",
+      timeWeather:"permanent night, steady rain, steam from the street",
+      lensDesc:"long lenses through crowds, shallow focus, reflections doing half the work",
+      texture:"digital grain, heavy bloom around light sources, chromatic fringing",
+      atmosphere:"rain, steam, volumetric light shafts, wet reflective ground",
+      composition:"tight vertical framing, layers of foreground signage, subject small in frame",
+      touchstones:"Blade Runner 2049, Ghost in the Shell, Wong Kar-wai",
+      palette:"neon magenta + cyan", grade:"rich saturated", style:"Digital cinema",
+      lights:["night / practicals","neon spill","hard rim light"],
+      lenses:["35mm","85mm portrait","135mm long","anamorphic"],
+      tiles:["texture & grain","atmosphere & haze","architecture","material samples"],
+      styleLib:{"cyberpunk — neon cities, rain-soaked streets":1,"horizontal anamorphic lens flares and oval bokeh":1,"crushed blacks with deep, dense shadow detail":1} }),
+
+    P({ group:"Sci-fi", ref:"Hard SF", sheetName:"COLD STEEL — style sheet", lookName:"Cold Steel",
+      concept:"a working spacecraft interior — clinical, functional, utterly unromantic",
+      lightDesc:"hard fluorescent overheads, cold fill from screens, pools of dark between",
+      timeWeather:"no exterior — sealed interior, recycled air",
+      lensDesc:"wide static frames, deep focus, locked-off tripod discipline",
+      texture:"clean digital capture, minimal grain, precise edges",
+      atmosphere:"faint dust in the beams, condensation on cold metal",
+      composition:"strict symmetry, corridors as leading lines, centred framing",
+      touchstones:"2001: A Space Odyssey, Moon, Interstellar",
+      palette:"cold blue + steel grey", grade:"cold blue", style:"Digital cinema",
+      lights:["night / practicals","soft window light","hard rim light"],
+      lenses:["14mm ultra-wide","24mm wide","50mm"],
+      tiles:["material samples","architecture","composition diagrams","texture & grain"],
+      styleLib:{"hard science fiction — realistic technology, believable physics":1,"deep focus, everything sharp from foreground to horizon":1,"clean clinical rendering, no grain, precise edges":1} }),
+
+    P({ group:"Crime & noir", ref:"Noir", sheetName:"VENETIAN BLIND — style sheet", lookName:"Venetian Blind",
+      concept:"classic noir — everything hidden in shadow, cigarette smoke doing the lighting",
+      lightDesc:"single hard key from a window, deep unlit shadow everywhere else, blind-slat patterns",
+      timeWeather:"night and rainy afternoons, blinds always half-drawn",
+      lensDesc:"40mm-ish normal lenses, static frames, occasional dutch tilt",
+      texture:"silver-rich monochrome, heavy grain, deep blacks",
+      atmosphere:"cigarette smoke curling through the key light, rain on glass",
+      composition:"low angles, faces half in darkness, foreground obstruction",
+      touchstones:"Double Indemnity, The Third Man, Gregg Toland",
+      palette:"bone white + ink black", grade:"monochrome", style:"35mm film",
+      lights:["hard rim light","soft window light","night / practicals"],
+      lenses:["35mm","50mm","85mm portrait"],
+      tiles:["texture & grain","atmosphere & haze","skin tones","composition diagrams"],
+      styleLib:{"film noir — high-contrast shadows, mystery":1,"crushed blacks with deep, dense shadow detail":1,"pronounced organic film grain":1} }),
+
+    P({ group:"Crime & noir", ref:"Thriller", sheetName:"SODIUM CITY — style sheet", lookName:"Sodium City",
+      concept:"a 1970s American crime picture — grimy, sunlit, morally exhausted",
+      lightDesc:"available light only, hard sun through smog, weak interior tungsten",
+      timeWeather:"hazy summer afternoons, brown sky, no rain",
+      lensDesc:"zoom lenses, sudden push-ins, loose handheld operating",
+      texture:"warm heavy grain, faded print, slightly milky blacks",
+      atmosphere:"smog haze, dust in shafts of light, exhaust",
+      composition:"loose reportage framing, subject off-centre, telephoto compression",
+      touchstones:"The French Connection, Serpico, Gordon Willis",
+      palette:"desaturated slate + rust", grade:"sepia / vintage", style:"35mm film",
+      lights:["harsh midday sun","overcast soft","night / practicals"],
+      lenses:["35mm","85mm portrait","135mm long"],
+      tiles:["texture & grain","atmosphere & haze","architecture","skin tones"],
+      styleLib:{"1970s cinema — warm grain, zoom lenses, realism":1,"crime thriller — urban environments, suspenseful framing":1,"lifted milky shadows, low-contrast filmic toe":1} }),
+
+    P({ group:"Nature & doc", ref:"Wildlife", sheetName:"FIRST LIGHT — style sheet", lookName:"First Light",
+      concept:"premium natural-history photography — patient, enormous, reverent",
+      lightDesc:"low golden sun and blue-hour ambience, long lenses catching rim light on fur and feather",
+      timeWeather:"dawn and dusk, mist rising off water, occasional rain",
+      lensDesc:"very long telephoto, extremely shallow focus, slow gimbal moves",
+      texture:"pristine digital capture, no grain, immense detail retention",
+      atmosphere:"morning mist, backlit spray, floating pollen",
+      composition:"subject small in vast landscape, or filling frame in macro — nothing between",
+      touchstones:"Planet Earth II, Our Planet, Frans Lanting",
+      palette:"earth tones + moss green", grade:"rich saturated", style:"Documentary photo",
+      lights:["golden hour","blue hour","overcast soft","soft window light"],
+      lenses:["135mm long","macro","24mm wide"],
+      tiles:["foliage & landscape","atmosphere & haze","material samples","sky & horizon"],
+      styleLib:{"very shallow depth of field, creamy background falloff":1,"clean clinical rendering, no grain, precise edges":1} }),
+
+    P({ group:"Commercial", ref:"Product", sheetName:"MATTE BLACK — style sheet", lookName:"Matte Black",
+      concept:"premium product film — the object treated as sculpture on a void",
+      lightDesc:"controlled studio strobe, hard rim light defining every edge, deep black surround",
+      timeWeather:"no exterior, seamless studio void",
+      lensDesc:"macro and long lenses, locked motion-control moves, razor-thin focus",
+      texture:"immaculate digital, zero grain, glass-clean specular highlights",
+      atmosphere:"a trace of atmospheric haze to catch the rim light",
+      composition:"centred hero object, generous negative space, strict symmetry",
+      touchstones:"Apple product films, Nike spots, Tim Hortons macro work",
+      palette:"bone white + ink black", grade:"high-contrast bleach", style:"Editorial fashion",
+      lights:["hard rim light","soft window light","night / practicals"],
+      lenses:["macro","85mm portrait","135mm long"],
+      tiles:["material samples","texture & grain","composition diagrams"],
+      styleLib:{"clean clinical rendering, no grain, precise edges":1,"crushed blacks with deep, dense shadow detail":1} }),
+
+    P({ group:"Animation", ref:"2D", sheetName:"STORYBOOK WARM — style sheet", lookName:"Storybook Warm",
+      concept:"hand-painted 2D warmth — a world that feels drawn by hand and lit by afternoon",
+      lightDesc:"soft ambient bounce, warm sunlight through leaves, no harsh shadow",
+      timeWeather:"late afternoon, gentle breeze, occasional summer rain",
+      lensDesc:"simple staging, gentle pans, minimal perspective distortion",
+      texture:"visible watercolour paper grain, painted backgrounds, clean cel foreground",
+      atmosphere:"dust motes in sunbeams, drifting leaves, soft haze on distant hills",
+      composition:"generous headroom, layered depth planes, calm horizontals",
+      touchstones:"Studio Ghibli, The Secret of Kells, Ernest & Celestine",
+      palette:"warm amber + deep brown", grade:"warm golden", style:"2D animation",
+      lights:["golden hour","overcast soft","soft window light"],
+      lenses:["24mm wide","35mm","50mm"],
+      tiles:["foliage & landscape","sky & horizon","texture & grain","architecture"],
+      styleLib:{"painterly animated film — brushstroke aesthetics, storybook visuals":1,"flat cel shading, clean fills":0} }),
+
+    P({ group:"Animation", ref:"3D", sheetName:"SOFT PLASTIC — style sheet", lookName:"Soft Plastic",
+      concept:"friendly 3D animation — rounded forms, soft materials, everything a little squeezable",
+      lightDesc:"large soft key, generous bounce fill, gentle warm rim on every subject",
+      timeWeather:"bright pleasant daylight, small fluffy clouds",
+      lensDesc:"wide friendly lenses, slight barrel distortion, playful camera moves",
+      texture:"smooth subsurface materials, soft specular rolloff, no grain",
+      atmosphere:"light volumetric rays, occasional floating sparkle",
+      composition:"centred subjects, strong readable silhouettes, low camera height",
+      touchstones:"Pixar, DreamWorks, Cloudy with a Chance of Meatballs",
+      palette:"teal + orange", grade:"rich saturated", style:"3D animated render",
+      lights:["soft window light","golden hour","hard rim light"],
+      lenses:["24mm wide","35mm","50mm"],
+      tiles:["material samples","skin tones","foliage & landscape","composition diagrams"],
+      styleLib:{"animated fantasy adventure — vibrant worlds, emotional storytelling":1,"clean clinical rendering, no grain, precise edges":1} }),
+
+    P({ group:"Horror", ref:"Gothic", sheetName:"CANDLE & MIST — style sheet", lookName:"Candle & Mist",
+      concept:"gothic horror — a house that is never fully lit and never fully still",
+      lightDesc:"single candle or lantern as the only source, huge falloff, everything beyond is black",
+      timeWeather:"night, cold fog pressing at the windows, no moon",
+      lensDesc:"slow creeping dollies, wide lenses in tight rooms, unsettling headroom",
+      texture:"heavy grain in the shadows, warm flicker on skin, cold blue in the dark",
+      atmosphere:"thick mist, candle smoke, cobweb and dust",
+      composition:"deep dark corners left unresolved, subject pressed to frame edge",
+      touchstones:"The Others, Crimson Peak, Nosferatu",
+      palette:"cold blue + steel grey", grade:"cold blue", style:"Photoreal cinema",
+      lights:["firelight","night / practicals","blue hour"],
+      lenses:["24mm wide","35mm","50mm"],
+      tiles:["atmosphere & haze","texture & grain","architecture","material samples"],
+      styleLib:{"gothic horror — candlelight, castles, mist":1,"crushed blacks with deep, dense shadow detail":1,"vintage uncoated glass, soft edges and low micro-contrast":1} }),
+
+    P({ group:"Vintage", ref:"Technicolor", sheetName:"GLORIOUS COLOUR — style sheet", lookName:"Glorious Colour",
+      concept:"1950s Technicolor musical — impossibly saturated, unashamedly artificial",
+      lightDesc:"flat bright studio lighting, heavy fill, glamorous beauty light on every face",
+      timeWeather:"painted skies, permanent perfect weather",
+      lensDesc:"static wide masters, theatrical staging, minimal camera movement",
+      texture:"dye-transfer richness, fine grain, glowing primaries",
+      atmosphere:"clean air, occasional theatrical haze for the musical numbers",
+      composition:"proscenium framing, full-body staging, symmetrical groupings",
+      touchstones:"Singin' in the Rain, The Red Shoes, An American in Paris",
+      palette:"teal + orange", grade:"rich saturated", style:"35mm film",
+      lights:["soft window light","harsh midday sun","hard rim light"],
+      lenses:["35mm","50mm","85mm portrait"],
+      tiles:["skin tones","material samples","composition diagrams","architecture"],
+      styleLib:{"1950s Technicolor — vibrant colours, glamorous lighting":1,"split toning — cool shadows against warm highlights":1} })
+  ];
+
+  var TOGGLES = [
+    {id:"header",   on:true,  tl:"Header title", td:"Look name across the top"},
+    {id:"hero",     on:true,  tl:"Hero style frame", td:"One large frame showing the full look"},
+    {id:"lightrow", on:true,  tl:"Lighting studies", td:"Same treatment under different setups"},
+    {id:"lensrow",  on:true,  tl:"Lens studies", td:"How the look reads at each focal length"},
+    {id:"swatches", on:true,  tl:"Colour swatches", td:"Labelled palette + grade bias strip"},
+    {id:"tiles",    on:true,  tl:"Sample tiles", td:"Texture, atmosphere & material studies"},
+    {id:"compo",    on:false, tl:"Composition diagrams", td:"Simple framing rules of the look"},
+    {id:"colorscript", on:false, tl:"Colour-script strip", td:"How the palette shifts scene to scene"},
+    {id:"donts",    on:false, tl:"Do / don't pair", td:"On-model frame beside an off-model one"},
+    {id:"labels",   on:false, tl:"Annotation labels", td:"Small notes naming each treatment"},
+    {id:"consist",  on:true,  tl:"Lock the look", td:"Identical grade & light in every tile"},
+    {id:"clean",    on:true,  tl:"Clean reference finish", td:"Generic subjects, no story, no text"}
+  ];
+
+  // ---------- state ----------
+  var DEF = {
+    style:null, format:"16:9", background:"hero frame + tile grid", resolution:"2K",
+    grade:"teal & orange",
+    lights:["golden hour","overcast soft","night / practicals"],
+    lenses:["24mm wide","50mm","85mm portrait"],
+    tiles:["texture & grain","atmosphere & haze","material samples"],
+    styleLib:{}, exclude:{}, refImgOn:false
+  };
+  function freshState(){
+    return {
+      style:DEF.style, format:DEF.format, background:DEF.background, resolution:DEF.resolution,
+      grade:DEF.grade,
+      lights:DEF.lights.slice(), lenses:DEF.lenses.slice(), tiles:DEF.tiles.slice(),
+      styleLib:{}, exclude:{}, refImgOn:false
+    };
+  }
+  var state = freshState();
+  EXCLUDE.forEach(function(e){ state.exclude[e.label]=e.on; });
+  var tg = {}; TOGGLES.forEach(function(t){ tg[t.id]=t.on; });
+
+  // ---------- chip helpers ----------
+  function chipRow(host, items, opts){
+    items.forEach(function(it){
+      var label = typeof it==="string"? it : it.label;
+      var b=document.createElement("button");
+      b.type="button"; b.className="chip"+(opts.q?" q":"");
+      b.setAttribute("aria-pressed","false");
+      b.textContent=label; b.dataset.value=label;
+      b.addEventListener("click",function(){ opts.onpick(b,label,it); });
+      host.appendChild(b);
+    });
+  }
+  function single(btn, hostId){
+    var host=document.getElementById(hostId);
+    var was=btn.getAttribute("aria-pressed")==="true";
+    Array.prototype.forEach.call(host.children,function(c){c.setAttribute("aria-pressed","false");});
+    btn.setAttribute("aria-pressed", was?"false":"true");
+  }
+  function multiToggle(b, arr, val){
+    var on=b.getAttribute("aria-pressed")!=="true"; b.setAttribute("aria-pressed",String(on));
+    if(on){ if(arr.indexOf(val)<0) arr.push(val); }
+    else { var i=arr.indexOf(val); if(i>=0) arr.splice(i,1); }
+  }
+
+  chipRow(document.getElementById("artStyle"), STYLE, {onpick:function(b,v,it){
+    single(b,"artStyle"); state.style=(b.getAttribute("aria-pressed")==="true")?it:null; render();
+  }});
+  chipRow(document.getElementById("paletteQ"), PALETTES, {q:true, onpick:function(b,v){
+    document.getElementById("palette").value=v; markPaletteQ(v); render();
+  }});
+  chipRow(document.getElementById("lightChips"), LIGHTS, {onpick:function(b,v){ multiToggle(b,state.lights,v); render(); }});
+  chipRow(document.getElementById("lensChips"), LENSES, {onpick:function(b,v){ multiToggle(b,state.lenses,v); render(); }});
+  chipRow(document.getElementById("tileChips"), TILES, {onpick:function(b,v){ multiToggle(b,state.tiles,v); render(); }});
+  chipRow(document.getElementById("excludeChips"), EXCLUDE, {onpick:function(b,label){
+    var on=b.getAttribute("aria-pressed")!=="true"; b.setAttribute("aria-pressed",String(on));
+    state.exclude[label]=on; render();
+  }});
+  Array.prototype.forEach.call(document.getElementById("excludeChips").children,function(c){
+    c.setAttribute("aria-pressed", String(!!state.exclude[c.dataset.value]));
+  });
+
+  // ---------- tri-state style library (neutral → include → exclude → neutral) ----------
+  function applyTri(b,st){ b.dataset.state = st===1?"inc": st===-1?"exc":""; }
+  function renderShotStates(){
+    Array.prototype.forEach.call(document.querySelectorAll(".tri"),function(b){
+      applyTri(b, state.styleLib[b.dataset.phrase]||0);
+    });
+  }
+  function buildStyleLib(){
+    var host=document.getElementById("styleLib");
+    function mkChip(label, phrase, title){
+      var b=document.createElement("button"); b.type="button"; b.className="chip tri";
+      b.dataset.phrase=phrase; b.textContent=label; if(title) b.title=title;
+      b.addEventListener("click",function(){
+        var cur=state.styleLib[phrase]||0, next = cur===0?1 : cur===1?-1 : 0;
+        if(next===0) delete state.styleLib[phrase]; else state.styleLib[phrase]=next;
+        applyTri(b,next); render();
+      });
+      return b;
+    }
+    STYLELIB.forEach(function(g){
+      var gl=document.createElement("div"); gl.className="lib-group"; gl.textContent=g.group; host.appendChild(gl);
+      var row=document.createElement("div"); row.className="chips"; host.appendChild(row);
+      g.items.forEach(function(it){
+        var label=typeof it==="string"?it:it.label, phrase=typeof it==="string"?it:it.phrase;
+        row.appendChild(mkChip(label, phrase, typeof it==="string"?"":phrase));
+      });
+    });
+  }
+  buildStyleLib();
+
+  // ---------- single-choice spec selectors ----------
+  function radioRow(hostId, items, key, fmt){
+    var host=document.getElementById(hostId);
+    items.forEach(function(it){
+      var b=document.createElement("button"); b.type="button"; b.className="chip";
+      b.setAttribute("aria-pressed","false"); b.dataset.value=String(it);
+      b.textContent = fmt? fmt(it) : it;
+      b.addEventListener("click",function(){
+        Array.prototype.forEach.call(host.children,function(c){c.setAttribute("aria-pressed","false");});
+        b.setAttribute("aria-pressed","true"); state[key]=it; render();
+      });
+      host.appendChild(b);
+    });
+  }
+  function selectRadio(hostId,val){
+    var host=document.getElementById(hostId);
+    Array.prototype.forEach.call(host.children,function(c){
+      c.setAttribute("aria-pressed", String(c.dataset.value===String(val)));
+    });
+  }
+  radioRow("format", FORMATS, "format");
+  radioRow("background", LAYOUTS, "background");
+  radioRow("resolution", RESOLUTION, "resolution");
+  radioRow("gradeFamily", GRADES, "grade");
+  selectRadio("format", state.format);
+  selectRadio("background", state.background);
+  selectRadio("resolution", state.resolution);
+  selectRadio("gradeFamily", state.grade);
+
+  function markPaletteQ(v){
+    var host=document.getElementById("paletteQ");
+    Array.prototype.forEach.call(host.children,function(c){
+      c.setAttribute("aria-pressed", String(c.dataset.value===v));
+    });
+  }
+  function pressOne(hostId,val){ var h=document.getElementById(hostId);
+    Array.prototype.forEach.call(h.children,function(c){ c.setAttribute("aria-pressed", String(c.dataset.value===val)); }); }
+  function pressMany(hostId,vals){ var h=document.getElementById(hostId), set={}; (vals||[]).forEach(function(x){set[x]=1;});
+    Array.prototype.forEach.call(h.children,function(c){ c.setAttribute("aria-pressed", String(!!set[c.dataset.value])); }); }
+
+  // ---------- build toggles ----------
+  var tHost=document.getElementById("toggles");
+  TOGGLES.forEach(function(t){
+    var b=document.createElement("button");
+    b.type="button"; b.className="toggle"; b.setAttribute("aria-pressed",String(t.on));
+    b.dataset.tid=t.id;
+    b.innerHTML='<span class="sw"></span><span><span class="tl">'+t.tl+'</span><span class="td">'+t.td+'</span></span>';
+    b.addEventListener("click",function(){
+      tg[t.id]=!tg[t.id]; b.setAttribute("aria-pressed",String(tg[t.id])); render();
+    });
+    tHost.appendChild(b);
+  });
+
+  // ---------- progress strip (fixed cells) ----------
+  var framesHost=document.getElementById("frames");
+  var STRIP=12, curFrames=0;
+  function ensureFrames(n){
+    if(n===curFrames) return; curFrames=n;
+    framesHost.style.setProperty("--fc", n);
+    framesHost.innerHTML="";
+    for(var i=1;i<=n;i++){ var f=document.createElement("div"); f.className="frame"; f.textContent=i; framesHost.appendChild(f); }
+  }
+
+  // ---------- reference image toggle ----------
+  var refChk=document.getElementById("refImgChk"), refUrl=document.getElementById("refImg");
+  refChk.addEventListener("change",function(){
+    state.refImgOn=refChk.checked; refUrl.style.display=refChk.checked?"":"none"; render();
+  });
+
+  // ---------- text inputs ----------
+  var TEXT_FIELDS=["sheetName","concept","lookName","lightDesc","timeWeather","lensDesc","texture","atmosphere","composition","touchstones","palette","styleCustom","excludeCustom","refImg"];
+  TEXT_FIELDS.forEach(function(id){ document.getElementById(id).addEventListener("input",function(e){
+     if(id==="palette") markPaletteQ(e.target.value);
+     render();
+  });});
+
+  // ---------- prompt helpers ----------
+  function v(id){ return (document.getElementById(id).value||"").trim(); }
+  function ph(s){ return "["+s+"]"; }
+  function or(val,fb){ return val ? val : ph(fb); }
+
+  // ---------- style spine (shared by all four prompts) ----------
+  function styleText(){
+    if(v("styleCustom")) return v("styleCustom");
+    if(state.style) return state.style.label.toLowerCase()+" ("+state.style.kw+")";
+    return "[medium]";
+  }
+  function suffixLine(){
+    var bits=[];
+    if(v("styleCustom")) bits.push(v("styleCustom"));
+    else if(state.style) bits.push(state.style.kw);
+    if(state.grade) bits.push(state.grade+" grade");
+    if(v("palette")) bits.push(v("palette"));
+    if(v("lightDesc")) bits.push(v("lightDesc"));
+    if(v("lensDesc")) bits.push(v("lensDesc"));
+    if(v("texture")) bits.push(v("texture"));
+    if(v("atmosphere")) bits.push(v("atmosphere"));
+    if(v("composition")) bits.push(v("composition"));
+    var libInc=[];
+    STYLELIB.forEach(function(g){ g.items.forEach(function(it){
+      var phrase=typeof it==="string"?it:it.phrase;
+      if(state.styleLib[phrase]===1) libInc.push(phrase);
+    }); });
+    if(libInc.length) bits.push(libInc.join(", "));
+    if(v("touchstones")) bits.push("in the spirit of "+v("touchstones"));
+    if(!bits.length) bits.push(ph("build the look above to generate a style suffix"));
+    return bits.join(", ")+".";
+  }
+
+  // ---------- prompt assembly ----------
+  function build(){
+    var concept = or(v("concept"),"describe the look in one line");
+    var nm = v("lookName") || "this look";
+    var title = or(v("sheetName"),"the sheet name");
+    var palette = or(v("palette"),"palette");
+    var st = styleText();
+
+    var L=[];
+    L.push('A single style reference sheet (look-development sheet) for "'+nm+'" — '+concept+'. Hold one consistent '+st+' treatment, a '+state.grade+' colour grade and a '+palette+' palette identically across every tile on the sheet. This is a study of the LOOK, not a story moment.');
+
+    if(tg.header) L.push('Header: the look name "'+(v("lookName")||title)+'" as a clean title across the top of the sheet.');
+
+    var look=[];
+    if(v("lightDesc")) look.push("Lighting character — "+v("lightDesc"));
+    if(v("timeWeather")) look.push("Time of day & weather — "+v("timeWeather"));
+    if(v("lensDesc")) look.push("Camera & lens feel — "+v("lensDesc"));
+    if(v("texture")) look.push("Film stock, grain & texture — "+v("texture"));
+    if(v("atmosphere")) look.push("Atmosphere & FX — "+v("atmosphere"));
+    if(v("composition")) look.push("Composition rules — "+v("composition"));
+    if(look.length) L.push("The look: "+look.join(". ")+".");
+    else L.push("The look: "+ph("describe lighting, lens, texture, atmosphere and composition")+".");
+
+    if(v("touchstones")) L.push("Reference touchstones (echo the treatment, do not copy any shot): "+v("touchstones")+".");
+    if(state.refImgOn && v("refImg")) L.push("Use the reference image "+v("refImg")+" as the basis for this look's grade, light quality and texture; match it closely in every tile.");
+
+    if(tg.hero) L.push("Hero style frame: one large example frame that shows the look at its most complete — a generic, unremarkable subject so the eye reads the treatment rather than a story.");
+
+    if(tg.lightrow){
+      var lts = state.lights.length? state.lights : ["golden hour","overcast soft","night / practicals"];
+      L.push("Lighting studies: a row of smaller frames showing the same treatment under these setups — "+lts.join(", ")+". The grade and texture stay locked; only the light changes.");
+    }
+    if(tg.lensrow){
+      var lns = state.lenses.length? state.lenses : ["24mm wide","50mm","85mm portrait"];
+      L.push("Lens studies: a strip showing how the look behaves at these focal lengths — "+lns.join(", ")+" — with the depth of field and lens character each implies.");
+    }
+    if(tg.tiles){
+      var tls = state.tiles.length? state.tiles : ["texture & grain","atmosphere & haze","material samples"];
+      L.push("Sample tiles: close-up study tiles covering "+tls.join(", ")+", each rendered under the locked grade.");
+    }
+    if(tg.swatches) L.push("Colour swatches: a labelled strip of the core palette ("+palette+") plus the grade's shadow, midtone and highlight bias.");
+    if(tg.compo) L.push("Composition diagrams: simple schematic frames showing the framing rules this look leans on.");
+    if(tg.colorscript) L.push("Colour-script strip: a small sequence of frames showing how the palette shifts from scene to scene across the story.");
+    if(tg.donts) L.push("Do / don't pair: one on-model frame beside a clearly off-model one, labelled, so the boundary of the look is unambiguous.");
+    if(tg.labels) L.push("Annotation labels: small neat callout labels naming each treatment, stock, focal length and light setup.");
+
+    var libInc=[], libExc=[];
+    STYLELIB.forEach(function(g){ g.items.forEach(function(it){
+      var phrase=typeof it==="string"?it:it.phrase, s=state.styleLib[phrase];
+      if(s===1) libInc.push(phrase); else if(s===-1) libExc.push(phrase);
+    }); });
+    if(libInc.length) L.push("Style direction — also apply: "+libInc.join(", ")+".");
+
+    L.push("Layout: arrange the sheet as a "+state.background+", clean and evenly spaced, so each tile reads on its own.");
+    if(tg.consist) L.push("Critical: every tile shares the exact same colour grade, light quality, lens character and texture. The subject may change between tiles — the look must not. Aspect ratio "+state.format+".");
+    if(tg.clean) L.push("Keep subjects generic and free of narrative drama so the treatment is what reads; keep on-image text minimal so labels can be added cleanly in layout afterward.");
+
+    var ex2=[];
+    EXCLUDE.forEach(function(e){ if(state.exclude[e.label]) ex2.push(e.phrase); });
+    var exCustom=v("excludeCustom"); if(exCustom) ex2.push(exCustom);
+    libExc.forEach(function(p){ ex2.push(p); });
+    if(ex2.length) L.push("Do not include / explicitly exclude: "+ex2.join(", ")+".");
+
+    L.push("Target output resolution: "+state.resolution+" — crisp, high detail, accurate colour.");
+
+    var prompt = L.join("\n\n");
+    if(document.getElementById("helperChk").checked){
+      var helper = (document.getElementById("helperText").textContent || "").trim();
+      prompt += "\n\n" + helper;
+    }
+    return prompt;
+  }
+
+  function buildFrame(){
+    var nm=(v("lookName")||"").trim(), who = nm ? '"'+nm+'"' : "this look";
+    return "Render one single hero style frame in "+who+": "+suffixLine()+" Use a generic, unremarkable subject — the frame exists to show the treatment, not to tell a story. Aspect ratio "+state.format+". No text.";
+  }
+  function buildSuffix(){
+    return suffixLine();
+  }
+  function buildApply(){
+    var nm=(v("lookName")||"").trim(), who = nm ? '"'+nm+'"' : "the style reference sheet";
+    return "Use "+who+" as the locked visual treatment for this shot. Match its colour grade, light quality, lens character, texture and atmosphere exactly, and apply them to the following subject: "+ph("describe your new shot here")+". Keep the treatment identical to the sheet even though the subject is new. Aspect ratio "+state.format+". No text.";
+  }
+
+  // ---------- completeness ----------
+  function completeness(){
+    var done=0, total=9;
+    if(v("concept")) done++;
+    if(v("lookName")) done++;
+    if(v("lightDesc")) done++;
+    if(v("lensDesc")) done++;
+    if(v("texture")||v("atmosphere")) done++;
+    if(state.style||v("styleCustom")) done++;
+    if(v("palette")) done++;
+    if(v("sheetName")) done++;
+    if(tg.hero||tg.lightrow||tg.lensrow) done++;
+    return {done:done,total:total,pct:Math.round(done/total*100)};
+  }
+
+  // ---------- render ----------
+  var out=document.getElementById("out");
+  function render(){
+    var text=build();
+    out.innerHTML = text
+      .replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];})
+      .replace(/\[[^\]]+\]/g,function(m){return '<span class="ph">'+m+'</span>';});
+    out.dataset.raw = text;
+
+    var words = text.replace(/\[[^\]]+\]/g,"").trim().split(/\s+/).filter(Boolean).length;
+    document.getElementById("wc").textContent = words+" words";
+
+    document.getElementById("mProject").textContent = v("sheetName") || "untitled look";
+    document.getElementById("mFmt").textContent = state.format;
+    document.getElementById("mGrade").textContent = state.grade;
+    document.getElementById("mRes").textContent = state.resolution;
+
+    function put(id, txt){
+      var o=document.getElementById(id);
+      o.innerHTML = txt
+        .replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];})
+        .replace(/\[[^\]]+\]/g,function(m){return '<span class="ph">'+m+'</span>';});
+      o.dataset.raw = txt;
+    }
+    put("out2", buildFrame());
+    put("out3", buildSuffix());
+    put("out4", buildApply());
+
+    ensureFrames(STRIP);
+    var c=completeness();
+    document.getElementById("pctNum").textContent = c.pct+"%";
+    var lit = Math.round(c.done/c.total*STRIP);
+    Array.prototype.forEach.call(framesHost.children,function(fr,idx){
+      fr.classList.toggle("lit", idx<lit);
+      fr.classList.toggle("cursor", idx===lit && lit<STRIP);
+    });
+  }
+
+  document.getElementById("helperChk").addEventListener("change", render);
+
+  // ---------- copy ----------
+  function wireCopy(btnId, outId, restLabel){
+    var btn=document.getElementById(btnId);
+    btn.addEventListener("click",function(){
+      var txt=document.getElementById(outId).dataset.raw||"";
+      function done(){ btn.classList.add("done"); btn.textContent="Copied ✓";
+        setTimeout(function(){btn.classList.remove("done"); btn.textContent=restLabel;},1600); }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done).catch(fallback);
+      } else fallback();
+      function fallback(){
+        var ta=document.createElement("textarea"); ta.value=txt;
+        ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta);
+        ta.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done();
+      }
+    });
+  }
+  wireCopy("copy","out","Copy prompt");
+  wireCopy("copy2","out2","Copy");
+  wireCopy("copy3","out3","Copy");
+  wireCopy("copy4","out4","Copy");
+
+  // ---------- reset ----------
+  function resetDefaults(){
+    TEXT_FIELDS.forEach(function(id){ document.getElementById(id).value=""; });
+    state = freshState();
+    EXCLUDE.forEach(function(e){ state.exclude[e.label]=e.on; });
+    document.querySelectorAll(".chip").forEach(function(c){c.setAttribute("aria-pressed","false");});
+    renderShotStates();
+    selectRadio("format",state.format); selectRadio("background",state.background);
+    selectRadio("resolution",state.resolution); selectRadio("gradeFamily",state.grade);
+    pressMany("lightChips", state.lights); pressMany("lensChips", state.lenses); pressMany("tileChips", state.tiles);
+    Array.prototype.forEach.call(document.getElementById("excludeChips").children,function(c){
+      c.setAttribute("aria-pressed", String(!!state.exclude[c.dataset.value]));
+    });
+    refChk.checked=false; refUrl.style.display="none";
+    document.getElementById("helperChk").checked = true;
+    TOGGLES.forEach(function(t){ tg[t.id]=t.on; });
+    Array.prototype.forEach.call(tHost.children,function(b){ var id=b.dataset.tid; if(id) b.setAttribute("aria-pressed", String(!!tg[id])); });
+  }
+  document.getElementById("reset").addEventListener("click",function(){ resetDefaults(); render(); });
+  // initial press of defaults
+  pressMany("lightChips", state.lights); pressMany("lensChips", state.lenses); pressMany("tileChips", state.tiles);
+
+  // ---------- state collect / apply ----------
+  function setVal(id,val){ var el=document.getElementById(id); if(el) el.value = val||""; }
+  function collectState(){
+    return {
+      sheetName:v("sheetName"), concept:v("concept"), lookName:v("lookName"),
+      lightDesc:v("lightDesc"), timeWeather:v("timeWeather"), lensDesc:v("lensDesc"),
+      texture:v("texture"), atmosphere:v("atmosphere"), composition:v("composition"),
+      touchstones:v("touchstones"),
+      palette:v("palette"), styleCustom:v("styleCustom"), excludeCustom:v("excludeCustom"),
+      refImg:v("refImg"), refImgOn:state.refImgOn,
+      style: state.style? state.style.label : null,
+      format:state.format, background:state.background, resolution:state.resolution,
+      grade:state.grade,
+      lights:state.lights.slice(), lenses:state.lenses.slice(), tiles:state.tiles.slice(),
+      styleLib: Object.assign({}, state.styleLib),
+      exclude: Object.assign({}, state.exclude),
+      toggles: Object.assign({}, tg),
+      helper: document.getElementById("helperChk").checked
+    };
+  }
+  function applyState(s){
+    if(!s) return;
+    setVal("sheetName",s.sheetName); setVal("concept",s.concept); setVal("lookName",s.lookName);
+    setVal("lightDesc",s.lightDesc); setVal("timeWeather",s.timeWeather); setVal("lensDesc",s.lensDesc);
+    setVal("texture",s.texture); setVal("atmosphere",s.atmosphere); setVal("composition",s.composition);
+    setVal("touchstones",s.touchstones);
+    setVal("palette",s.palette); setVal("styleCustom",s.styleCustom); setVal("excludeCustom",s.excludeCustom);
+    setVal("refImg",s.refImg);
+    state.refImgOn = !!s.refImgOn; refChk.checked=state.refImgOn; refUrl.style.display=state.refImgOn?"":"none";
+
+    state.style = s.style ? (STYLE.filter(function(x){return x.label===s.style;})[0]||null) : null;
+    pressOne("artStyle", state.style? state.style.label : null);
+
+    state.styleLib = Object.assign({}, s.styleLib||{}); renderShotStates();
+    markPaletteQ(s.palette||"");
+
+    state.format=s.format||DEF.format; selectRadio("format",state.format);
+    state.background=s.background||DEF.background; selectRadio("background",state.background);
+    state.resolution=s.resolution||DEF.resolution; selectRadio("resolution",state.resolution);
+    state.grade=s.grade||DEF.grade; selectRadio("gradeFamily",state.grade);
+
+    state.lights=(s.lights||DEF.lights).slice(); pressMany("lightChips",state.lights);
+    state.lenses=(s.lenses||DEF.lenses).slice(); pressMany("lensChips",state.lenses);
+    state.tiles=(s.tiles||DEF.tiles).slice(); pressMany("tileChips",state.tiles);
+
+    state.exclude = Object.assign({}, s.exclude||{});
+    Array.prototype.forEach.call(document.getElementById("excludeChips").children,function(c){
+      c.setAttribute("aria-pressed", String(!!state.exclude[c.dataset.value])); });
+
+    TOGGLES.forEach(function(t){ tg[t.id]=t.on; });
+    if(s.toggles){ Object.keys(tg).forEach(function(k){ if(k in s.toggles) tg[k]=!!s.toggles[k]; }); }
+    Array.prototype.forEach.call(tHost.children,function(b){ var id=b.dataset.tid; if(id) b.setAttribute("aria-pressed", String(!!tg[id])); });
+
+    document.getElementById("helperChk").checked = s.helper!==false;
+    render();
+  }
+
+  // ---------- save / load looks ----------
+  var STORE_KEY="lookbook.sheets.v1";
+  var memStore=null;
+  function loadStore(){
+    if(memStore) return memStore;
+    try{ var raw=localStorage.getItem(STORE_KEY); memStore = raw? JSON.parse(raw):[]; }
+    catch(e){ memStore=[]; }
+    if(!Array.isArray(memStore)) memStore=[];
+    return memStore;
+  }
+  function persistStore(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(memStore)); }catch(e){} }
+
+  function renderSaved(){
+    var list=loadStore(), host=document.getElementById("savedList"); host.innerHTML="";
+    if(!list.length){ host.innerHTML='<div class="empty">No saved looks yet — fill the form and hit Save.</div>'; return; }
+    list.forEach(function(en){
+      var row=document.createElement("div"); row.className="saved-item";
+      var load=document.createElement("button"); load.type="button"; load.className="saved-load";
+      var nm=document.createElement("span"); nm.className="sname"; nm.textContent=en.name;
+      var dt=document.createElement("span"); dt.className="sdate"; dt.textContent=en.date;
+      load.appendChild(nm); load.appendChild(dt);
+      load.addEventListener("click",function(){ applyState(en.data); });
+      var del=document.createElement("button"); del.type="button"; del.className="saved-del"; del.textContent="✕"; del.title="Delete";
+      del.addEventListener("click",function(ev){ ev.stopPropagation(); memStore=loadStore().filter(function(e){return e.id!==en.id;}); persistStore(); renderSaved(); });
+      row.appendChild(load); row.appendChild(del); host.appendChild(row);
+    });
+  }
+  document.getElementById("save").addEventListener("click",function(){
+    var list=loadStore();
+    var nm=(v("sheetName")||"").trim()||"Untitled look";
+    list.unshift({ id:String(Date.now())+Math.random().toString(36).slice(2,6), name:nm, date:new Date().toLocaleString(), data:collectState() });
+    persistStore(); renderSaved();
+    var b=document.getElementById("save"); b.textContent="Saved ✓"; b.classList.add("done");
+    setTimeout(function(){ b.textContent="Save"; b.classList.remove("done"); },1400);
+  });
+  renderSaved();
+
+  // ---------- export / import (.json) ----------
+  function sanitizeName(n){ return ((n||"look").replace(/[^a-z0-9\-_]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,40))||"look"; }
+  document.getElementById("exportBtn").addEventListener("click",function(){
+    var nm=(v("sheetName")||"").trim()||"Untitled look";
+    var payload={ app:"lookbook", version:1, name:nm, date:new Date().toISOString(), data:collectState() };
+    var blob=new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a"); a.href=url; a.download="LOOKBOOK_"+sanitizeName(nm)+".json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+    var b=document.getElementById("exportBtn"), o=b.textContent; b.textContent="Exported ✓"; b.classList.add("done");
+    setTimeout(function(){ b.textContent=o; b.classList.remove("done"); },1400);
+  });
+  document.getElementById("importBtn").addEventListener("click",function(){ document.getElementById("importFile").click(); });
+  document.getElementById("importFile").addEventListener("change",function(e){
+    var f=e.target.files && e.target.files[0]; if(!f){ return; }
+    var r=new FileReader();
+    r.onload=function(){
+      var b=document.getElementById("importBtn"), o=b.textContent;
+      try{
+        var parsed=JSON.parse(r.result);
+        var s=(parsed && parsed.data)? parsed.data : parsed;
+        applyState(s);
+        b.textContent="Imported ✓"; b.classList.add("done");
+        setTimeout(function(){ b.textContent=o; b.classList.remove("done"); },1400);
+      }catch(err){
+        b.textContent="Invalid file"; b.style.borderColor="#E5664A"; b.style.color="#E5664A";
+        setTimeout(function(){ b.textContent=o; b.style.borderColor=""; b.style.color=""; },1800);
+      }
+    };
+    r.readAsText(f);
+    e.target.value="";
+  });
+
+  // ---------- random look ----------
+  document.getElementById("randomBtn").addEventListener("click",function(){
+    var c=LIBRARY[Math.floor(Math.random()*LIBRARY.length)];
+    var s=Object.assign({}, c); s.exclude={};
+    applyState(s);
+    var b=document.getElementById("randomBtn");
+    b.textContent="▶ "+(c.lookName||c.sheetName||"LOADED");
+    setTimeout(function(){ b.textContent="🎲 Random look"; },1700);
+  });
+
+  // ---------- look preset dropdown ----------
+  var presetSel=document.getElementById("presetSelect");
+  (function(){
+    var lastGroup=null, grp=null;
+    LIBRARY.forEach(function(c,i){
+      var group=c.group || "Other";
+      if(group!==lastGroup){ grp=document.createElement("optgroup"); grp.label=group; presetSel.appendChild(grp); lastGroup=group; }
+      var opt=document.createElement("option"); opt.value=String(i);
+      opt.textContent=(c.lookName||c.sheetName) + (c.ref? "  ·  "+c.ref : "");
+      grp.appendChild(opt);
+    });
+  })();
+  presetSel.addEventListener("change",function(){
+    var i=parseInt(presetSel.value,10); if(isNaN(i)||!LIBRARY[i]) return;
+    var s=Object.assign({}, LIBRARY[i]); s.exclude={};
+    applyState(s);
+  });
+
+  render();
+})();
+</script>
