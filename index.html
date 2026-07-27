@@ -110,8 +110,11 @@
   ol.actions li b{color:var(--ink); font-weight:600}
   ol.actions li .sub{display:block; margin-top:6px; font-size:14px; color:var(--dim)}
 
-  .btnrow{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
-  .btnrow a.btn{margin-top:0}
+  /* tool link sitting inside its own action box */
+  ol.actions a.btn{
+    margin-top:14px; padding:11px 18px; font-size:13px;
+    box-shadow:0 4px 16px rgba(240,146,47,.18);
+  }
 
   a.btn{
     display:inline-flex; align-items:center; gap:10px; margin-top:18px;
@@ -203,14 +206,10 @@
       <h2>Lock your references first</h2>
       <p class="intro">Most people skip straight to generating shots, then fight to keep characters, style, and locations consistent across clips. The fix is to settle those <em>before</em> any video exists.</p>
       <ol class="actions">
-        <li><b>Build a style reference sheet.</b><span class="sub">A single image that defines the look — color grade, lighting mood, lens feel, overall aesthetic you want every shot to share.</span></li>
-        <li><b>Build a location reference sheet.</b><span class="sub">Pin down the setting so the environment stays the same from panel to panel.</span></li>
-        <li><b>Build a character reference sheet.</b><span class="sub">Define any recurring subjects so they don’t drift across shots.</span></li>
+        <li><b>Build a style reference sheet.</b><span class="sub">A single image that defines the look — color grade, lighting mood, lens feel, overall aesthetic you want every shot to share.</span><a class="btn" href="style-prompt-builder.html">Style reference sheet builder <span class="btn-arrow">→</span></a></li>
+        <li><b>Build a location reference sheet.</b><span class="sub">Pin down the setting so the environment stays the same from panel to panel.</span><a class="btn" href="location-prompt-builder.html">Location reference sheet builder <span class="btn-arrow">→</span></a></li>
+        <li><b>Build a character reference sheet.</b><span class="sub">Define any recurring subjects so they don’t drift across shots.</span><a class="btn" href="character-prompt-builder.html">Character reference sheet builder <span class="btn-arrow">→</span></a></li>
       </ol>
-      <div class="btnrow">
-        <a class="btn" href="style-prompt-builder.html">Style reference sheet builder <span class="btn-arrow">→</span></a>
-        <a class="btn" href="character-prompt-builder.html">Character reference sheet builder <span class="btn-arrow">→</span></a>
-      </div>
       <p class="tip"><b>Why it matters →</b> these sheets are what you’ll feed into the storyboard step to enforce consistency for free.</p>
     </section>
 
