@@ -1887,6 +1887,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     if(st.grade) bits.push(st.grade+" grade");
     if(v("palette")) bits.push(v("palette"));
     if(v("lightDesc")) bits.push(v("lightDesc"));
+    if(v("timeWeather")) bits.push(v("timeWeather"));
     if(v("lensDesc")) bits.push(v("lensDesc"));
     if(v("texture")) bits.push(v("texture"));
     if(v("atmosphere")) bits.push(v("atmosphere"));
@@ -1896,6 +1897,17 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     if(v("touchstones")) bits.push("in the spirit of "+v("touchstones"));
     if(!bits.length) return ph("set the look in chapter 01 to generate a style suffix");
     return bits.join(", ")+".";
+  }
+  // The block the character and location prompts embed. Copying either prompt
+  // therefore carries the full look — nothing has to be pasted alongside it.
+  function styleBlock(what){
+    var nm=v("lookName");
+    var head = 'VISUAL STYLE'+(nm? ' — "'+nm+'"' : '')+' — apply this treatment to every view on this '+what+':';
+    var L=[head, styleSuffix()];
+    if(st.refImgOn && v("refImg"))
+      L.push('Match the style reference image '+v("refImg")+' for grade, light quality and texture.');
+    L.push('Reference lighting: '+st.refLight+'.');
+    return L.join("\n");
   }
   function styleExclusions(){
     var out=[]; eachLibPhrase(function(p,s){ if(s===-1) out.push(p); }); return out;
@@ -1976,7 +1988,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     var title = or(v("chSheetName"),"the sheet name");
     var L=[];
     L.push('A single character reference sheet (model sheet) for '+nm+' — '+concept+'.');
-    L.push('Visual style — hold exactly this treatment across every view on the sheet: '+styleSuffix());
+    L.push(styleBlock('character reference sheet'));
     if(chg.header) L.push('Header: the character name "'+(v("charName")||title)+'" as a clean title across the top of the sheet.');
     var design=[];
     if(v("physique")) design.push("Build & physique — "+v("physique"));
@@ -2007,8 +2019,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     if(chg.labels) L.push("Annotation labels: small neat callout labels pointing to distinctive design features.");
     L.push("Background: a clean "+ch.background+" background, even and uncluttered, so the character reads clearly.");
     if(chg.consist) L.push("Critical: keep the exact same design — same face, build, costume, colours and signature props — in every single view, expression and pose. Aspect ratio "+st.format+".");
-    if(chg.clean) L.push("Use "+st.refLight+" with no theatrical scene mood, so no detail is hidden in shadow; keep on-image text minimal so labels can be added cleanly in layout afterward.");
-    else L.push("Reference lighting: "+st.refLight+".");
+    if(chg.clean) L.push("Keep the reference lighting flat and even with no theatrical scene mood, so no detail is hidden in shadow; keep on-image text minimal so labels can be added cleanly in layout afterward.");
     var ex2=[];
     CH_EXCLUDE.forEach(function(e){ if(ch.exclude[e.label]) ex2.push(e.phrase); });
     if(v("chExcludeCustom")) ex2.push(v("chExcludeCustom"));
@@ -2038,7 +2049,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     var title = or(v("loSheetName"),"the sheet name");
     var L=[];
     L.push('A single location reference sheet (environment reference sheet) for "'+nm+'" — '+concept+'. This is a study of the PLACE, not a story moment.');
-    L.push('Visual style — hold exactly this treatment across every view on the sheet: '+styleSuffix());
+    L.push(styleBlock('location reference sheet'));
     if(log.header) L.push('Header: the location name "'+(v("locName")||title)+'" as a clean title across the top of the sheet.');
     var place=[];
     if(v("architecture")) place.push("Architecture & structures — "+v("architecture"));
@@ -2122,8 +2133,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     var o=el(id); if(!o) return;
     var html=esc(txt).replace(/\[[^\]]+\]/g,function(m){return '<span class="ph">'+m+'</span>';});
     if(markStyle){
-      html=html.replace(/(Visual style — hold exactly this treatment across every view on the sheet: )/,
-        '<span class="st">$1</span>');
+      html=html.replace(/^(VISUAL STYLE[^\n]*)/m, '<span class="st">$1</span>');
     }
     o.innerHTML=html; o.dataset.raw=txt;
   }
