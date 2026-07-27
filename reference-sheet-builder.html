@@ -850,7 +850,7 @@ SHEET ANATOMY:
 
 GOLDEN RULE: it is the SAME character every time. Lock the face, build, costume, colours and signature props, and repeat them in every view, expression and pose. Any drift between views defeats the purpose of the sheet.
 
-TIPS: keep lighting flat and even (no theatrical shadows that hide design) · neutral background · describe the costume layer by layer · name the signature props so they appear every time · render the artwork cleanly and keep on-image text minimal so labels can be added in layout afterward.
+TIPS: keep lighting flat and even (no theatrical shadows that hide design) · neutral background · describe the costume layer by layer · name the signature props so they appear every time · render cleanly and keep on-image text minimal so labels can be added in layout afterward · the sheet is rendered in whatever medium the prompt's visual style states — "model sheet" describes the layout, not the drawing style.
 </script>
 
 <script type="text/plain" id="helperLoc">
@@ -2014,7 +2014,8 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     if(v("chExcludeCustom")) ex2.push(v("chExcludeCustom"));
     styleExclusions().forEach(function(p){ ex2.push(p); });
     if(ex2.length) L.push("Do not include / explicitly exclude: "+ex2.join(", ")+".");
-    L.push("Target output resolution: "+st.resolution+" — crisp, high detail, sharp linework.");
+    L.push("Target output resolution: "+st.resolution+" — crisp, high detail.");
+    L.push("Rendering: produce this sheet in the visual style stated above — "+styleSuffix()+" The reference-sheet format governs layout and consistency only; it must not push the rendering toward illustration, cartoon or animation unless that style explicitly calls for it.");
     return withHelper(L.join("\n\n"), "helperChar");
   }
   function buildPortrait(){
@@ -2077,6 +2078,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     styleExclusions().forEach(function(p){ ex.push(p); });
     if(ex.length) L.push("Do not include / explicitly exclude: "+ex.join(", ")+".");
     L.push("Target output resolution: "+st.resolution+" — crisp, high detail, accurate materials.");
+    L.push("Rendering: produce this sheet in the visual style stated above — "+styleSuffix()+" The reference-sheet format governs layout and consistency only; it must not push the rendering toward illustration, cartoon or animation unless that style explicitly calls for it.");
     return withHelper(L.join("\n\n"), "helperLoc");
   }
   function buildEstablish(){
