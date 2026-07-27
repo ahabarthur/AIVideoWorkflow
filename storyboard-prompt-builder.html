@@ -306,28 +306,12 @@
           <div id="charSheets"></div>
         </div>
 
-        <div class="field">
-          <label class="lab"><span class="n">03</span><span class="t">Film type</span><span class="h">pick one, or add your own</span></label>
-          <div class="chips" id="filmType" data-single data-core></div>
-          <div class="lib-body" id="filmTypeLib" style="margin-top:10px"></div>
-          <p class="lib-hint">Genre — tap to include (+), again to exclude (−), again to clear.</p>
-          <input type="text" id="filmCustom" placeholder="…or type a custom film type (overrides selection)" style="margin-top:8px">
-        </div>
-
-        <div class="field">
-          <label class="lab"><span class="n">04</span><span class="t">Tone</span><span class="h">pick any</span></label>
-          <div class="chips" id="tone" data-multi data-core></div>
-          <div class="lib-body" id="toneLib" style="margin-top:10px"></div>
-          <p class="lib-hint">Film look — tap to include (+), again to exclude (−), again to clear.</p>
-          <input type="text" id="toneCustom" placeholder="…or add your own tone" style="margin-top:8px">
-        </div>
-
         <div class="field" style="margin-bottom:0">
-          <label class="lab"><span class="n">05</span><span class="t">Art style</span><span class="h">preset, or type custom</span></label>
-          <div class="chips" id="artStyle" data-single data-core></div>
-          <div class="lib-body" id="artStyleLib" style="margin-top:10px"></div>
-          <p class="lib-hint">Styles &amp; combos — tap to include (+), again to exclude (−), again to clear.</p>
-          <input type="text" id="styleCustom" placeholder="…or describe a custom style (overrides preset)" style="margin-top:8px">
+          <label class="lab" for="styleRef"><span class="n">03</span><span class="t">Style reference</span><span class="h">the look every panel shares</span></label>
+          <textarea id="styleRef" data-core style="min-height:104px" placeholder="Paste the style suffix from your style reference sheet…"></textarea>
+          <p class="lib-hint">Film type, tone, art style, camera options and palette now live in the
+            <a href="style-prompt-builder.html" style="color:var(--amber)">Style reference sheet builder</a> —
+            build the look there, copy its <b>style suffix</b>, and paste it here.</p>
         </div>
       </div>
 
@@ -335,33 +319,23 @@
         <p class="eyebrow">The Frame <span class="bar"></span></p>
 
         <div class="field">
-          <label class="lab" for="hero"><span class="n">06</span><span class="t">Hero / Subject</span><span class="h">what the camera loves</span></label>
+          <label class="lab" for="hero"><span class="n">04</span><span class="t">Hero / Subject</span><span class="h">what the camera loves</span></label>
           <input type="text" id="hero" data-core placeholder="The bearded barista; the espresso machine">
         </div>
         <div class="field">
-          <label class="lab" for="antiHero"><span class="n">07</span><span class="t">Anti hero</span><span class="h">the rival / antagonist (optional)</span></label>
+          <label class="lab" for="antiHero"><span class="n">05</span><span class="t">Anti hero</span><span class="h">the rival / antagonist (optional)</span></label>
           <input type="text" id="antiHero" placeholder="A brooding lone-wolf rival in black">
         </div>
         <div class="field">
-          <label class="lab" for="setting"><span class="n">08</span><span class="t">Setting</span><span class="h">where it happens</span></label>
+          <label class="lab" for="setting"><span class="n">06</span><span class="t">Setting</span><span class="h">where it happens</span></label>
           <input type="text" id="setting" data-core placeholder="A warm, wood-lined corner café at golden hour">
         </div>
         <div class="field">
-          <label class="lab" for="payoff"><span class="n">09</span><span class="t">Payoff</span><span class="h">the final beat</span></label>
+          <label class="lab" for="payoff"><span class="n">07</span><span class="t">Payoff</span><span class="h">the final beat</span></label>
           <input type="text" id="payoff" data-core placeholder="He steps back, arms folded — perfect rosetta, proud grin">
         </div>
-        <div class="field">
-          <label class="lab" for="palette"><span class="n">10</span><span class="t">Palette</span><span class="h">2–4 colors</span></label>
-          <input type="text" id="palette" data-core placeholder="warm amber + deep brown">
-          <div class="chips" id="paletteQ" style="margin-top:8px"></div>
-        </div>
-        <div class="field">
-          <label class="lab"><span class="n">11</span><span class="t">Camera options</span><span class="h">sizes, angles, moves, FX, captions, film stock &amp; format</span></label>
-          <div class="lib-body" id="cameraLib" style="margin-top:4px"></div>
-          <p class="lib-hint">Tap to include (+), again to exclude (−), again to clear.</p>
-        </div>
         <div class="field" style="margin-bottom:0">
-          <label class="lab"><span class="n">12</span><span class="t">Exclude</span><span class="h">items the model should leave out</span></label>
+          <label class="lab"><span class="n">08</span><span class="t">Exclude</span><span class="h">items the model should leave out</span></label>
           <div class="chips" id="excludeChips"></div>
           <input type="text" id="excludeCustom" placeholder="…other items to exclude (comma-separated)" style="margin-top:8px">
         </div>
@@ -473,167 +447,20 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
 <script>
 (function(){
   // ---------- data ----------
-  var FILM = ["historical","product film","brand film","animated short","music video","trailer","explainer"];
-  var TONE = ["epic","comedic","premium / minimal","tender","intense"];
-  var STYLE = [
-    {label:"Retro anime cel", kw:"hand-painted 70s/80s anime, aggressive speed lines, grainy paper, ink linework"},
-    {label:"3D animated short", kw:"Pixar/DreamWorks 3D render, soft cinematic light, expressive faces, shallow depth of field"},
-    {label:"2D cartoon comedy", kw:"Ghibli-warm 2D animation, hand-drawn, golden palette, exaggerated poses"},
-    {label:"Premium product film", kw:"matte black background, dramatic rim light, macro detail, minimal italic captions"},
-    {label:"Cinematic brand film", kw:"dark moody live-action, dramatic key light, slow-motion, high contrast, shallow focus"}
-  ];
-  var PALETTES = ["warm amber + deep brown","matte black + chrome pop","cold blue + steel grey","golden-hour wash","neon night + magenta"];
+  // Film type, tone, art style, camera options and palette moved to the
+  // style reference sheet builder. This map only exists so presets and
+  // older saved boards can be folded into the single style reference line.
+  var STYLE_KW = {
+    "Retro anime cel":"hand-painted 70s/80s anime, aggressive speed lines, grainy paper, ink linework",
+    "3D animated short":"Pixar/DreamWorks 3D render, soft cinematic light, expressive faces, shallow depth of field",
+    "2D cartoon comedy":"Ghibli-warm 2D animation, hand-drawn, golden palette, exaggerated poses",
+    "Premium product film":"matte black background, dramatic rim light, macro detail, minimal italic captions",
+    "Cinematic brand film":"dark moody live-action, dramatic key light, slow-motion, high contrast, shallow focus"
+  };
   var FORMATS = ["16:9","9:16","1:1","4:5","21:9","4:3"];
   var PANELS  = [6,9,12,15,20,24];
   var SECONDS = [6,10,15,30,45,60];
   var RESOLUTION = ["720p","1K","2K","4K","6K","8K"];
-  var SHOTLIB = [
-    {group:"Sizes", items:["establishing / wide","medium","close-up","extreme close-up","macro","two-shot","insert"]},
-    {group:"Angles", items:["eye-level","low (heroic)","high","dutch / canted (tension)","over-the-shoulder","POV","top-down / overhead"]},
-    {group:"Moves", items:["push in","pull out","pan / whip pan","tracking","rotation / orbit","tilt","rack focus","slow-mo","rapid cut"]},
-    {group:"Atmosphere / FX", items:["speed lines","dust","spray","sparks","steam","light streaks","particles","lens flare","bokeh"]},
-    {group:"Caption formula", items:[{label:"caption formula", phrase:'the caption format "SHOT TYPE, ANGLE/MOVE. Punchy action sentence with one sensory detail."'}]},
-    {group:"Style keywords", items:[
-      {label:"Retro anime cel", phrase:"hand-painted 70s/80s anime, aggressive speed lines, grainy paper, ink linework"},
-      {label:"3D animated short", phrase:"Pixar/DreamWorks render, soft cinematic light, expressive faces, shallow depth of field"},
-      {label:"2D cartoon comedy", phrase:"Ghibli-warm hand-drawn 2D, golden palette, exaggerated poses"},
-      {label:"Premium product film", phrase:"matte black background, dramatic rim light, macro detail, minimal italic captions"},
-      {label:"Cinematic brand film", phrase:"dark moody live-action, dramatic key light, slow-motion, high contrast, shallow focus"}
-    ]},
-    {group:"Film stock · colour", items:[
-      {label:"Kodak Vision3 500T", phrase:"shot on Kodak Vision3 500T — cinematic, low-light, warm highlights"},
-      {label:"Kodak Vision3 250D", phrase:"shot on Kodak Vision3 250D — daylight-balanced, natural colours"},
-      {label:"Kodak Vision3 50D", phrase:"shot on Kodak Vision3 50D — extremely fine grain, crisp image"}
-    ]},
-    {group:"Film stock · reversal", items:[
-      {label:"Kodachrome", phrase:"shot on Kodachrome reversal film — rich colours, archival quality"},
-      {label:"Fujifilm Velvia", phrase:"shot on Fujifilm Velvia — highly saturated landscapes"}
-    ]},
-    {group:"Film stock · B&W", items:[
-      {label:"Kodak Tri-X 400", phrase:"shot on Kodak Tri-X 400 black & white — gritty documentary look"},
-      {label:"Ilford HP5 Plus", phrase:"shot on Ilford HP5 Plus black & white — versatile classic contrast"},
-      {label:"Ilford Delta 100", phrase:"shot on Ilford Delta 100 black & white — fine grain and sharpness"}
-    ]},
-    {group:"Film format", items:[
-      {label:"8mm", phrase:"shot on 8mm film — home-movie vintage look"},
-      {label:"Super 8", phrase:"shot on Super 8 — nostalgic, grainy"},
-      {label:"16mm", phrase:"shot on 16mm — documentary / arthouse aesthetic"},
-      {label:"35mm", phrase:"shot on 35mm — traditional Hollywood standard"},
-      {label:"65mm / 70mm", phrase:"shot on 65mm / 70mm — ultra-high resolution, epic scale"},
-      {label:"IMAX 70mm", phrase:"shot on IMAX 70mm — massive image quality and immersion"}
-    ]},
-    {group:"Genre", loc:"brief", items:[
-      {label:"Action", phrase:"action genre"},{label:"Adventure", phrase:"adventure genre"},
-      {label:"Comedy", phrase:"comedy genre"},{label:"Drama", phrase:"drama genre"},
-      {label:"Romance", phrase:"romance genre"},{label:"Thriller", phrase:"thriller genre"},
-      {label:"Horror", phrase:"horror genre"},{label:"Mystery", phrase:"mystery genre"},
-      {label:"Crime", phrase:"crime genre"},{label:"Western", phrase:"western genre"},
-      {label:"Fantasy", phrase:"fantasy genre"},{label:"Science Fiction", phrase:"science fiction genre"},
-      {label:"Historical", phrase:"historical genre"},{label:"War", phrase:"war genre"},
-      {label:"Musical", phrase:"musical genre"}
-    ]},
-    {group:"Genre · non-fiction", loc:"brief", items:[
-      {label:"Documentary", phrase:"documentary style"},{label:"Docudrama", phrase:"docudrama style"},
-      {label:"Nature Film", phrase:"nature-film style"},{label:"Biography", phrase:"biographical style"}
-    ]},
-    {group:"Genre · experimental", loc:"brief", items:[
-      {label:"Avant-garde", phrase:"avant-garde style"},{label:"Art Film", phrase:"art-film style"},
-      {label:"Abstract Film", phrase:"abstract-film style"},{label:"Surrealist Film", phrase:"surrealist-film style"}
-    ]},
-    {group:"Film look", loc:"brief", items:[
-      {label:"Super 8 Nostalgia", phrase:"Super 8 nostalgia look — grainy, warm, home-movie feel"},
-      {label:"16mm Indie", phrase:"16mm indie look — organic grain, handheld realism"},
-      {label:"Kodak Vision3 Hollywood", phrase:"Kodak Vision3 Hollywood look — modern blockbuster"},
-      {label:"70mm Epic", phrase:"70mm epic look — grand landscapes, sweeping shots"},
-      {label:"Bleach Bypass", phrase:"bleach bypass look — desaturated, high contrast"},
-      {label:"Technicolor", phrase:"Technicolor look — vibrant classic Hollywood colours"},
-      {label:"Film Noir", phrase:"film noir look — black & white, dramatic shadows"},
-      {label:"Vintage 1970s", phrase:"vintage 1970s look — warm tones, soft contrast"},
-      {label:"1980s Film", phrase:"1980s film look — neon colours, strong contrast"},
-      {label:"Modern Digital Cinema", phrase:"modern digital cinema — clean, sharp, high dynamic range"}
-    ]},
-    {group:"Style · epic & historical", loc:"brief", items:[
-      {label:"David Lean Epic", phrase:"David Lean epic — vast landscapes, sweeping camera moves, grand scale"},
-      {label:"Sword-and-Sandal Epic", phrase:"sword-and-sandal epic — ancient empires, heroic battles, golden sunlight"},
-      {label:"Biblical Epic", phrase:"biblical epic — divine atmosphere, dramatic skies, reverent compositions"},
-      {label:"Historical Drama", phrase:"historical drama — authentic costumes, naturalistic lighting"},
-      {label:"Medieval Chronicle", phrase:"medieval chronicle — rugged realism, candlelight, weathered textures"}
-    ]},
-    {group:"Style · blockbuster", loc:"brief", items:[
-      {label:"Modern Blockbuster", phrase:"modern blockbuster — large-scale action, dynamic camera work"},
-      {label:"Adventure Serial", phrase:"adventure serial — treasure hunts, practical stunts, energetic pacing"},
-      {label:"Disaster Film", phrase:"disaster film — massive destruction, high stakes"},
-      {label:"Superhero Cinema", phrase:"superhero cinema — dramatic hero shots, stylized action"},
-      {label:"Military Action", phrase:"military action film — kinetic combat, gritty realism"}
-    ]},
-    {group:"Style · prestige drama", loc:"brief", items:[
-      {label:"Oscar-Worthy Drama", phrase:"Oscar-worthy drama — intimate performances, elegant cinematography"},
-      {label:"Period Drama", phrase:"period drama — refined production design, rich costumes"},
-      {label:"Family Drama", phrase:"family drama — emotional close-ups, warm natural lighting"},
-      {label:"Courtroom Drama", phrase:"courtroom drama — tense dialogue, restrained visuals"},
-      {label:"Biographical Film", phrase:"biographical film — grounded realism, character-driven storytelling"}
-    ]},
-    {group:"Style · indie & art house", loc:"brief", items:[
-      {label:"A24 Indie", phrase:"A24 indie style — atmospheric, understated, emotionally complex"},
-      {label:"European Art Film", phrase:"European art film — contemplative pacing, visual symbolism"},
-      {label:"Festival Film", phrase:"festival film — naturalistic acting, handheld intimacy"},
-      {label:"Slow Cinema", phrase:"slow cinema — long takes, minimal dialogue"},
-      {label:"Experimental Film", phrase:"experimental film — abstract visuals, unconventional editing"}
-    ]},
-    {group:"Style · documentary", loc:"brief", items:[
-      {label:"BBC Documentary", phrase:"BBC documentary — polished, informative, cinematic"},
-      {label:"Nature Documentary", phrase:"nature documentary — macro shots, wildlife, environmental storytelling"},
-      {label:"Observational Doc", phrase:"observational documentary — fly-on-the-wall realism"},
-      {label:"War Documentary", phrase:"war documentary — archival feel, handheld footage"},
-      {label:"Investigative Doc", phrase:"investigative documentary — interviews, evidence-driven narrative"}
-    ]},
-    {group:"Style · vintage & retro", loc:"brief", items:[
-      {label:"Silent Film", phrase:"silent film — expressive acting, monochrome imagery"},
-      {label:"1920s Cinema", phrase:"1920s cinema — ornate sets, theatrical staging"},
-      {label:"Film Noir", phrase:"film noir — high-contrast shadows, mystery"},
-      {label:"1950s Technicolor", phrase:"1950s Technicolor — vibrant colours, glamorous lighting"},
-      {label:"1970s Cinema", phrase:"1970s cinema — warm grain, zoom lenses, realism"},
-      {label:"1980s Cinema", phrase:"1980s cinema — neon colours, bold contrast"},
-      {label:"1990s Blockbuster", phrase:"1990s blockbuster — practical effects, energetic editing"}
-    ]},
-    {group:"Style · genre", loc:"brief", items:[
-      {label:"Western", phrase:"western — expansive landscapes, rugged heroes"},
-      {label:"Spaghetti Western", phrase:"spaghetti western — extreme close-ups, dusty atmosphere"},
-      {label:"Crime Thriller", phrase:"crime thriller — urban environments, suspenseful framing"},
-      {label:"Detective Mystery", phrase:"detective mystery — moody lighting, investigative tension"},
-      {label:"Psychological Thriller", phrase:"psychological thriller — unsettling imagery, subjective camera"},
-      {label:"Horror Film", phrase:"horror film — suspenseful shadows, unsettling atmosphere"},
-      {label:"Gothic Horror", phrase:"gothic horror — candlelight, castles, mist"},
-      {label:"Monster Movie", phrase:"monster movie — creature reveals, escalating dread"}
-    ]},
-    {group:"Style · sci-fi & fantasy", loc:"brief", items:[
-      {label:"Hard Science Fiction", phrase:"hard science fiction — realistic technology, believable physics"},
-      {label:"Space Opera", phrase:"space opera — epic scale, cosmic adventure"},
-      {label:"Cyberpunk", phrase:"cyberpunk — neon cities, rain-soaked streets"},
-      {label:"Dystopian Future", phrase:"dystopian future — oppressive environments, bleak tone"},
-      {label:"High Fantasy", phrase:"high fantasy — mythical landscapes, heroic quests"},
-      {label:"Dark Fantasy", phrase:"dark fantasy — mystical but ominous atmosphere"}
-    ]},
-    {group:"Style · animation", loc:"brief", items:[
-      {label:"Anime Feature", phrase:"anime feature film — expressive characters, cinematic composition"},
-      {label:"Animated Fantasy Adventure", phrase:"animated fantasy adventure — vibrant worlds, emotional storytelling"},
-      {label:"Stop-Motion Film", phrase:"stop-motion film — handcrafted textures, tactile detail"},
-      {label:"Painterly Animated", phrase:"painterly animated film — brushstroke aesthetics, storybook visuals"}
-    ]},
-    {group:"Style combos", loc:"brief", items:[
-      {label:"Biblical Epic · IMAX", phrase:"biblical epic, 70mm IMAX, slow motion, golden hour"},
-      {label:"A24 · 16mm", phrase:"A24 indie, 16mm film, natural light"},
-      {label:"BBC Nature · macro", phrase:"BBC documentary, nature documentary, macro photography"},
-      {label:"Noir · rain · B&W", phrase:"film noir, rain, black & white, high contrast"},
-      {label:"Cyberpunk · night", phrase:"cyberpunk, neon, heavy rain, night"},
-      {label:"Candlelit period", phrase:"historical drama, candlelight, shallow depth of field"},
-      {label:"Oscar · handheld", phrase:"Oscar-worthy drama, Kodak Vision3 500T, handheld camera"},
-      {label:"Western · IMAX", phrase:"western, IMAX landscapes, dust storms"},
-      {label:"Anime · epic fantasy", phrase:"anime feature, epic fantasy, volumetric lighting"},
-      {label:"Spaghetti · CU", phrase:"spaghetti western, extreme close-ups, desert heat haze"},
-      {label:"Biblical Epic (recommended)", phrase:"biblical epic, 70mm IMAX, Kodak Vision3, dramatic chiaroscuro lighting, golden dust particles, shallow depth of field, ultra-detailed costumes, cinematic slow motion, volumetric god rays, emotional close-ups, award-winning cinematography, photorealistic live action"}
-    ]}
-  ];
   var EXCLUDE = [];
 
   // Stories drawn from the uploaded books (Genesis–2 Samuel).
@@ -1058,7 +885,7 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
   ];
 
   // ---------- state ----------
-  var state = { film:"", tone:[], style:null, palette:"", format:"16:9", panels:15, seconds:15, resolution:"2K", shot:{}, chars:[{name:"",desc:"",img:"",imgOn:false,action:""}], exclude:{} };
+  var state = { format:"16:9", panels:15, seconds:15, resolution:"2K", chars:[{name:"",desc:"",img:"",imgOn:false,action:""}], exclude:{} };
   EXCLUDE.forEach(function(e){ state.exclude[e.label]=e.on; });
   var tg = {}; TOGGLES.forEach(function(t){ tg[t.id]=t.on; });
 
@@ -1074,20 +901,6 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
       host.appendChild(b);
     });
   }
-  chipRow(document.getElementById("filmType"), FILM, {onpick:function(b,v){
-    single(b,"filmType"); state.film=(b.getAttribute("aria-pressed")==="true")?v:""; render();
-  }});
-  chipRow(document.getElementById("tone"), TONE, {onpick:function(b,v){
-    var on=b.getAttribute("aria-pressed")!=="true"; b.setAttribute("aria-pressed",String(on));
-    state.tone = on ? state.tone.concat([v]) : state.tone.filter(function(x){return x!==v;});
-    render();
-  }});
-  chipRow(document.getElementById("artStyle"), STYLE, {onpick:function(b,v,it){
-    single(b,"artStyle"); state.style=(b.getAttribute("aria-pressed")==="true")?it:null; render();
-  }});
-  chipRow(document.getElementById("paletteQ"), PALETTES, {q:true, onpick:function(b,v){
-    document.getElementById("palette").value=v; markPaletteQ(v); render();
-  }});
   chipRow(document.getElementById("excludeChips"), EXCLUDE, {onpick:function(b,label){
     var on=b.getAttribute("aria-pressed")!=="true"; b.setAttribute("aria-pressed",String(on));
     state.exclude[label]=on; render();
@@ -1096,94 +909,7 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
     c.setAttribute("aria-pressed", String(!!state.exclude[c.dataset.value]));
   });
 
-  // tri-state shot library (neutral → include → exclude → neutral)
-  function applyTri(b,st){ b.dataset.state = st===1?"inc": st===-1?"exc":""; }
-  function renderShotStates(){
-    Array.prototype.forEach.call(document.querySelectorAll(".tri"),function(b){
-      applyTri(b, state.shot[b.dataset.phrase]||0);
-    });
-  }
-  var GROUP_HOST = {
-    "Genre":"filmTypeLib",
-    "Genre · non-fiction":"filmTypeLib",
-    "Genre · experimental":"filmTypeLib",
-    "Film look":"toneLib",
-    "Style · epic & historical":"artStyleLib",
-    "Style · blockbuster":"artStyleLib",
-    "Style · prestige drama":"artStyleLib",
-    "Style · indie & art house":"artStyleLib",
-    "Style · documentary":"artStyleLib",
-    "Style · vintage & retro":"artStyleLib",
-    "Style · genre":"artStyleLib",
-    "Style · sci-fi & fantasy":"artStyleLib",
-    "Style · animation":"artStyleLib",
-    "Style combos":"artStyleLib",
-    "Style keywords":"artStyleLib"
-  };
-  function buildShotLib(){
-    var libHost=document.getElementById("shotLib");
-    var SECTION_HOST = {
-      "Sizes":"cameraLib","Angles":"cameraLib","Moves":"cameraLib",
-      "Atmosphere / FX":"cameraLib","Caption formula":"cameraLib",
-      "Film stock · colour":"cameraLib","Film stock · reversal":"cameraLib",
-      "Film stock · B&W":"cameraLib","Film format":"cameraLib"
-    };
-    function mkChip(label, phrase, title){
-      var b=document.createElement("button"); b.type="button"; b.className="chip tri";
-      b.dataset.phrase=phrase; b.textContent=label;
-      if(title) b.title=title;
-      b.addEventListener("click",function(){
-        var cur=state.shot[phrase]||0, next = cur===0?1 : cur===1?-1 : 0;
-        if(next===0) delete state.shot[phrase]; else state.shot[phrase]=next;
-        applyTri(b,next); render();
-      });
-      return b;
-    }
-    var fieldAccum = {};   // hostId -> [{label,phrase,title}]
-    SHOTLIB.forEach(function(g){
-      var targetId = GROUP_HOST[g.group];
-      var fieldHost = targetId ? document.getElementById(targetId) : null;
-      if(fieldHost){
-        var arr = fieldAccum[targetId] || (fieldAccum[targetId]=[]);
-        g.items.forEach(function(it){
-          var label=typeof it==="string"?it:it.label, phrase=typeof it==="string"?it:it.phrase;
-          arr.push({label:label, phrase:phrase, title: typeof it==="string"?"":phrase});
-        });
-      } else {
-        var sectId = SECTION_HOST[g.group];
-        var host = (sectId && document.getElementById(sectId)) ? document.getElementById(sectId) : libHost;
-        if(!host) return;
-        var gl=document.createElement("div"); gl.className="lib-group"; gl.textContent=g.group; host.appendChild(gl);
-        var row=document.createElement("div"); row.className="chips"; host.appendChild(row);
-        g.items.forEach(function(it){
-          var label=typeof it==="string"?it:it.label, phrase=typeof it==="string"?it:it.phrase;
-          row.appendChild(mkChip(label, phrase, typeof it==="string"?"":phrase));
-        });
-      }
-    });
-    // Brief field hosts: drop chips that duplicate the field's preset selector,
-    // de-duplicate by phrase, sort A→Z, render one flowing row
-    function presetLabels(hostId){
-      var set={}, add=function(s){ if(s) set[String(s).trim().toLowerCase()]=1; };
-      var src = hostId==="filmTypeLib" ? FILM : hostId==="toneLib" ? TONE : hostId==="artStyleLib" ? STYLE : [];
-      (src||[]).forEach(function(s){ add(typeof s==="string"?s:s.label); });
-      return set;
-    }
-    Object.keys(fieldAccum).forEach(function(hostId){
-      var host=document.getElementById(hostId); if(!host) return;
-      var preset=presetLabels(hostId), seen={}, uniq=[];
-      fieldAccum[hostId].forEach(function(x){
-        var key=x.phrase.toLowerCase();
-        if(seen[key]) return;
-        if(preset[x.label.trim().toLowerCase()]) return;   // duplicate of a preset chip
-        seen[key]=1; uniq.push(x);
-      });
-      uniq.sort(function(a,b){ return a.label.toLowerCase().localeCompare(b.label.toLowerCase()); });
-      var row=document.createElement("div"); row.className="chips"; host.appendChild(row);
-      uniq.forEach(function(x){ row.appendChild(mkChip(x.label, x.phrase, x.title)); });
-    });
-  }
-  buildShotLib();
+  function renderShotStates(){}
 
   // single-choice spec selectors (always one active)
   function radioRow(hostId, items, key, fmt){
@@ -1220,13 +946,6 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
     Array.prototype.forEach.call(host.children,function(c){c.setAttribute("aria-pressed","false");});
     btn.setAttribute("aria-pressed", was?"false":"true");
   }
-  function markPaletteQ(v){
-    var host=document.getElementById("paletteQ");
-    Array.prototype.forEach.call(host.children,function(c){
-      c.setAttribute("aria-pressed", String(c.dataset.value===v));
-    });
-  }
-
   // ---------- build toggles ----------
   var tHost=document.getElementById("toggles");
   TOGGLES.forEach(function(t){
@@ -1251,11 +970,8 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
   }
 
   // ---------- inputs ----------
-  ["boardName","subject","filmCustom","toneCustom","styleCustom","hero","antiHero","setting","payoff","palette","excludeCustom"]
-    .forEach(function(id){ document.getElementById(id).addEventListener("input",function(e){
-       if(id==="palette") markPaletteQ(e.target.value);
-       render();
-    });});
+  ["boardName","subject","styleRef","hero","antiHero","setting","payoff","excludeCustom"]
+    .forEach(function(id){ document.getElementById(id).addEventListener("input",render); });
 
   // ---------- character sheets (dynamic count) ----------
   var charsHost=document.getElementById("charSheets");
@@ -1317,26 +1033,19 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
   // ---------- prompt assembly ----------
   function build(){
     var subject = or(v("subject"),"your subject / idea");
-    var filmVal = v("filmCustom") || state.film;
-    var filmHdr = (filmVal ? filmVal : "film").toUpperCase();
-    var styleTxt;
-    if(v("styleCustom")) styleTxt = v("styleCustom");
-    else if(state.style) styleTxt = state.style.label.toLowerCase()+" ("+state.style.kw+")";
-    else styleTxt = "[art style]";
-    var tones = state.tone.slice(); if(v("toneCustom")) tones.push(v("toneCustom"));
-    var toneTxt = tones.length? tones.join(", ") : "[tone]";
+    var styleRef = or(v("styleRef"),"paste the style suffix from your style reference sheet");
     var hero    = or(v("hero"),"hero / subject");
     var setting = or(v("setting"),"setting");
     var payoff  = or(v("payoff"),"final payoff beat");
     var title   = or(v("boardName"),"TITLE");
-    var palette = or(v("palette"),"palette");
 
     var L=[];
     var n=state.panels, secs=state.seconds, fmt=state.format;
     var g=gridFor(n), cols=g[0], rows=g[1];
 
-    L.push('A single storyboard sheet — '+cols+' columns × '+rows+' rows, '+n+' equal panels with thin borders and small gutters. One cohesive '+styleTxt+' look and a '+palette+' palette held across every frame. Overall tone: '+toneTxt+'.');
-    if(tg.header) L.push('Header: the title "'+title+'" as a stylized logotype, top-left; "'+secs+' SEC — '+filmHdr+'" top-right.');
+    L.push('A single storyboard sheet — '+cols+' columns × '+rows+' rows, '+n+' equal panels with thin borders and small gutters.');
+    L.push('Visual treatment — hold this exact look across every panel: '+styleRef);
+    if(tg.header) L.push('Header: the title "'+title+'" as a stylized logotype, top-left; "'+secs+' SEC" top-right.');
     var castLine = 'Subject: '+subject+'. The hero the camera loves: '+hero+'.';
     var antiHero = v("antiHero");
     if(antiHero) castLine += ' The anti-hero / rival: '+antiHero+'.';
@@ -1383,17 +1092,9 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
     if(tg.later){
       L.push("Note: render the artwork cleanly first; keep on-image text minimal so captions and numbers can be added in layout afterward.");
     }
-    var libInc=[], libExc=[];
-    SHOTLIB.forEach(function(g){ g.items.forEach(function(it){
-      var phrase=typeof it==="string"?it:it.phrase, st=state.shot[phrase];
-      if(st===1) libInc.push(phrase); else if(st===-1) libExc.push(phrase);
-    }); });
-    if(libInc.length) L.push("Emphasize and include: "+libInc.join(", ")+".");
-
     var ex=[];
     EXCLUDE.forEach(function(e){ if(state.exclude[e.label]) ex.push(e.phrase); });
     var exCustom=v("excludeCustom"); if(exCustom) ex.push(exCustom);
-    libExc.forEach(function(p){ ex.push(p); });
     if(ex.length) L.push("Do not include / explicitly exclude: "+ex.join(", ")+".");
 
     L.push("Target output resolution: "+state.resolution+" — crisp, high detail.");
@@ -1431,16 +1132,13 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
 
   // ---------- completeness ----------
   function completeness(){
-    var done=0, total=9;
+    var done=0, total=6;
     if(v("subject")) done++;
-    if(state.film || v("filmCustom")) done++;
-    if(state.tone.length||v("toneCustom")) done++;
-    if(state.style||v("styleCustom")) done++;
+    if(v("styleRef")) done++;
     if(v("hero")) done++;
     if(v("setting")) done++;
     if(v("payoff")) done++;
     if(v("boardName")) done++;
-    if(v("palette")) done++;
     return {done:done,total:total,pct:Math.round(done/total*100)};
   }
 
@@ -1547,9 +1245,9 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
   });
 
   document.getElementById("reset").addEventListener("click",function(){
-    ["boardName","subject","filmCustom","toneCustom","styleCustom","hero","antiHero","setting","payoff","palette","excludeCustom"]
+    ["boardName","subject","styleRef","hero","antiHero","setting","payoff","excludeCustom"]
       .forEach(function(id){document.getElementById(id).value="";});
-    state={film:"",tone:[],style:null,palette:"",format:"16:9",panels:15,seconds:15,resolution:"2K",shot:{},chars:[{name:"",desc:"",img:"",imgOn:false,action:""}],exclude:{}};
+    state={format:"16:9",panels:15,seconds:15,resolution:"2K",chars:[{name:"",desc:"",img:"",imgOn:false,action:""}],exclude:{}};
     document.querySelectorAll(".chip").forEach(function(c){c.setAttribute("aria-pressed","false");});
     renderShotStates();
     selectRadio("format","16:9"); selectRadio("panels",15); selectRadio("seconds",15); selectRadio("resolution","2K");
@@ -1586,35 +1284,39 @@ TIPS: lock the art style and palette at the front so they apply globally · keep
 
   function collectState(){
     return {
-      boardName:v("boardName"), subject:v("subject"),
-      film:state.film, filmCustom:v("filmCustom"),
-      tone:state.tone.slice(), toneCustom:v("toneCustom"),
-      style: state.style? state.style.label : null, styleCustom:v("styleCustom"),
+      boardName:v("boardName"), subject:v("subject"), styleRef:v("styleRef"),
       hero:v("hero"), antiHero:v("antiHero"), setting:v("setting"), payoff:v("payoff"),
-      palette:v("palette"), excludeCustom:v("excludeCustom"),
+      excludeCustom:v("excludeCustom"),
       exclude: Object.assign({}, state.exclude),
-      shot: Object.assign({}, state.shot),
       format:state.format, panels:state.panels, seconds:state.seconds, resolution:state.resolution,
       chars: state.chars.map(function(c){return {name:c.name,desc:c.desc,img:c.img,imgOn:c.imgOn,action:c.action};}),
       toggles: Object.assign({}, tg),
       helper: document.getElementById("helperChk").checked
     };
   }
+  // Presets and boards saved before the split still carry film / tone /
+  // style / palette / shot keys — fold them into the one style reference line.
+  function legacyStyleRef(s){
+    var bits=[];
+    if(s.styleCustom) bits.push(s.styleCustom);
+    else if(s.style && STYLE_KW[s.style]) bits.push(s.style.toLowerCase()+" ("+STYLE_KW[s.style]+")");
+    else if(s.style) bits.push(s.style);
+    var film=s.filmCustom||s.film; if(film) bits.push(film);
+    var tone=(s.tone||[]).slice(); if(s.toneCustom) tone.push(s.toneCustom);
+    if(tone.length) bits.push(tone.join(", ")+" tone");
+    if(s.palette) bits.push(s.palette+" palette");
+    Object.keys(s.shot||{}).forEach(function(k){ if(s.shot[k]===1) bits.push(k); });
+    return bits.join(", ")+(bits.length?".":"");
+  }
   function applyState(s){
     if(!s) return;
     setVal("boardName",s.boardName); setVal("subject",s.subject);
-    setVal("filmCustom",s.filmCustom); setVal("toneCustom",s.toneCustom); setVal("styleCustom",s.styleCustom);
     setVal("hero",s.hero); setVal("antiHero",s.antiHero); setVal("setting",s.setting); setVal("payoff",s.payoff);
-    setVal("palette",s.palette); setVal("excludeCustom",s.excludeCustom);
-    state.film = s.film||""; pressOne("filmType", state.film);
-    state.tone = (s.tone||[]).slice(); pressMany("tone", state.tone);
-    state.style = s.style ? (STYLE.filter(function(x){return x.label===s.style;})[0]||null) : null;
-    pressOne("artStyle", state.style? state.style.label : null);
+    setVal("excludeCustom",s.excludeCustom);
+    setVal("styleRef", s.styleRef || legacyStyleRef(s));
     state.exclude = Object.assign({}, s.exclude||{});
     Array.prototype.forEach.call(document.getElementById("excludeChips").children,function(c){
       c.setAttribute("aria-pressed", String(!!state.exclude[c.dataset.value])); });
-    state.shot = Object.assign({}, s.shot||{}); renderShotStates();
-    markPaletteQ(s.palette||"");
     state.format=s.format||"16:9"; selectRadio("format",state.format);
     state.panels=s.panels||15; selectRadio("panels",state.panels);
     state.seconds=s.seconds||15; selectRadio("seconds",state.seconds);

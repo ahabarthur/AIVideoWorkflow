@@ -345,21 +345,48 @@
       </div>
 
       <div class="panel">
+        <p class="eyebrow">Film &amp; tone <span class="bar"></span></p>
+        <div class="field">
+          <label class="lab"><span class="n">14</span><span class="t">Film type</span><span class="h">pick one, or add your own</span></label>
+          <div class="chips" id="filmType" data-single></div>
+          <div class="lib-body" id="filmTypeLib" style="margin-top:10px"></div>
+          <p class="lib-hint">Genre — tap to include (+), again to exclude (−), again to clear.</p>
+          <input type="text" id="filmCustom" placeholder="…or type a custom film type (overrides selection)" style="margin-top:8px">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="lab"><span class="n">15</span><span class="t">Tone</span><span class="h">pick any</span></label>
+          <div class="chips" id="tone" data-multi></div>
+          <div class="lib-body" id="toneLib" style="margin-top:10px"></div>
+          <p class="lib-hint">Film look — tap to include (+), again to exclude (−), again to clear.</p>
+          <input type="text" id="toneCustom" placeholder="…or add your own tone" style="margin-top:8px">
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow">Camera <span class="bar"></span></p>
+        <div class="field" style="margin-bottom:0">
+          <label class="lab"><span class="n">16</span><span class="t">Camera options</span><span class="h">sizes, angles, moves, FX, film stock &amp; format</span></label>
+          <div class="lib-body" id="cameraLib" style="margin-top:4px"></div>
+          <p class="lib-hint">Tap to include (+), again to exclude (−), again to clear.</p>
+        </div>
+      </div>
+
+      <div class="panel">
         <p class="eyebrow">Sheet content <span class="bar"></span></p>
         <div class="field">
-          <label class="lab"><span class="n">14</span><span class="t">Lighting studies</span><span class="h">setups shown on the sheet</span></label>
+          <label class="lab"><span class="n">17</span><span class="t">Lighting studies</span><span class="h">setups shown on the sheet</span></label>
           <div class="chips" id="lightChips" data-multi></div>
         </div>
         <div class="field">
-          <label class="lab"><span class="n">15</span><span class="t">Lens studies</span><span class="h">focal lengths in the strip</span></label>
+          <label class="lab"><span class="n">18</span><span class="t">Lens studies</span><span class="h">focal lengths in the strip</span></label>
           <div class="chips" id="lensChips" data-multi></div>
         </div>
         <div class="field">
-          <label class="lab"><span class="n">16</span><span class="t">Sample tiles</span><span class="h">extra study tiles on the sheet</span></label>
+          <label class="lab"><span class="n">19</span><span class="t">Sample tiles</span><span class="h">extra study tiles on the sheet</span></label>
           <div class="chips" id="tileChips" data-multi></div>
         </div>
         <div class="field" style="margin-bottom:0">
-          <label class="lab"><span class="n">17</span><span class="t">Exclude</span><span class="h">things to keep off the sheet</span></label>
+          <label class="lab"><span class="n">20</span><span class="t">Exclude</span><span class="h">things to keep off the sheet</span></label>
           <div class="chips" id="excludeChips"></div>
           <input type="text" id="excludeCustom" placeholder="…other things to exclude (comma-separated)" style="margin-top:8px">
         </div>
@@ -483,7 +510,9 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     {label:"Documentary photo", kw:"available-light reportage photography, natural colour, candid framing"},
     {label:"Editorial fashion", kw:"high-end editorial photography, controlled strobe, immaculate retouch"}
   ];
-  var PALETTES = ["sun-bleached ochre + shadow blue","teal + orange","desaturated slate + rust","neon magenta + cyan","warm amber + deep brown","cold blue + steel grey","earth tones + moss green","bone white + ink black"];
+  var PALETTES = ["sun-bleached ochre + shadow blue","teal + orange","desaturated slate + rust","neon magenta + cyan","warm amber + deep brown","cold blue + steel grey","earth tones + moss green","bone white + ink black","matte black + chrome pop","golden-hour wash","neon night + magenta"];
+  var FILM = ["historical","product film","brand film","animated short","music video","trailer","explainer"];
+  var TONE = ["epic","comedic","premium / minimal","tender","intense"];
   var FORMATS = ["16:9","2.39:1","3:2","4:3","1:1","4:5","9:16","21:9"];
   var LAYOUTS = ["hero frame + tile grid","even grid of frames","contact-sheet strip","split hero + swatch column"];
   var RESOLUTION = ["720p","1K","2K","4K","6K","8K"];
@@ -557,8 +586,120 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
       {label:"Animated Fantasy Adventure", phrase:"animated fantasy adventure — vibrant worlds, emotional storytelling"},
       {label:"Stop-Motion Film", phrase:"stop-motion film — handcrafted textures, tactile detail"},
       {label:"Painterly Animated", phrase:"painterly animated film — brushstroke aesthetics, storybook visuals"}
+    ]},
+    {group:"Style · blockbuster", loc:"brief", items:[
+      {label:"Modern Blockbuster", phrase:"modern blockbuster — large-scale action, dynamic camera work"},
+      {label:"Adventure Serial", phrase:"adventure serial — treasure hunts, practical stunts, energetic pacing"},
+      {label:"Disaster Film", phrase:"disaster film — massive destruction, high stakes"},
+      {label:"Superhero Cinema", phrase:"superhero cinema — dramatic hero shots, stylized action"},
+      {label:"Military Action", phrase:"military action film — kinetic combat, gritty realism"}
+    ]},
+    {group:"Style · prestige drama", loc:"brief", items:[
+      {label:"Oscar-Worthy Drama", phrase:"Oscar-worthy drama — intimate performances, elegant cinematography"},
+      {label:"Period Drama", phrase:"period drama — refined production design, rich costumes"},
+      {label:"Family Drama", phrase:"family drama — emotional close-ups, warm natural lighting"},
+      {label:"Courtroom Drama", phrase:"courtroom drama — tense dialogue, restrained visuals"},
+      {label:"Biographical Film", phrase:"biographical film — grounded realism, character-driven storytelling"}
+    ]},
+    {group:"Style · documentary", loc:"brief", items:[
+      {label:"BBC Documentary", phrase:"BBC documentary — polished, informative, cinematic"},
+      {label:"Nature Documentary", phrase:"nature documentary — macro shots, wildlife, environmental storytelling"},
+      {label:"Observational Doc", phrase:"observational documentary — fly-on-the-wall realism"},
+      {label:"War Documentary", phrase:"war documentary — archival feel, handheld footage"},
+      {label:"Investigative Doc", phrase:"investigative documentary — interviews, evidence-driven narrative"}
+    ]},
+    {group:"Style combos", loc:"brief", items:[
+      {label:"Biblical Epic · IMAX", phrase:"biblical epic, 70mm IMAX, slow motion, golden hour"},
+      {label:"A24 · 16mm", phrase:"A24 indie, 16mm film, natural light"},
+      {label:"BBC Nature · macro", phrase:"BBC documentary, nature documentary, macro photography"},
+      {label:"Noir · rain · B&W", phrase:"film noir, rain, black & white, high contrast"},
+      {label:"Cyberpunk · night", phrase:"cyberpunk, neon, heavy rain, night"},
+      {label:"Candlelit period", phrase:"historical drama, candlelight, shallow depth of field"},
+      {label:"Oscar · handheld", phrase:"Oscar-worthy drama, Kodak Vision3 500T, handheld camera"},
+      {label:"Western · IMAX", phrase:"western, IMAX landscapes, dust storms"},
+      {label:"Anime · epic fantasy", phrase:"anime feature, epic fantasy, volumetric lighting"},
+      {label:"Spaghetti · CU", phrase:"spaghetti western, extreme close-ups, desert heat haze"},
+      {label:"Biblical Epic (recommended)", phrase:"biblical epic, 70mm IMAX, Kodak Vision3, dramatic chiaroscuro lighting, golden dust particles, shallow depth of field, ultra-detailed costumes, cinematic slow motion, volumetric god rays, emotional close-ups, award-winning cinematography, photorealistic live action"}
+    ]},
+    {group:"Style keywords", items:[
+      {label:"Retro anime cel", phrase:"hand-painted 70s/80s anime, aggressive speed lines, grainy paper, ink linework"},
+      {label:"3D animated short", phrase:"Pixar/DreamWorks render, soft cinematic light, expressive faces, shallow depth of field"},
+      {label:"2D cartoon comedy", phrase:"Ghibli-warm hand-drawn 2D, golden palette, exaggerated poses"},
+      {label:"Premium product film", phrase:"matte black background, dramatic rim light, macro detail, minimal italic captions"},
+      {label:"Cinematic brand film", phrase:"dark moody live-action, dramatic key light, slow-motion, high contrast, shallow focus"}
     ]}
   ];
+
+  // Film type / genre — tri-state, shown under Film type
+  var GENRELIB = [
+    {group:"Genre", loc:"brief", items:[
+      {label:"Action", phrase:"action genre"},{label:"Adventure", phrase:"adventure genre"},
+      {label:"Comedy", phrase:"comedy genre"},{label:"Drama", phrase:"drama genre"},
+      {label:"Romance", phrase:"romance genre"},{label:"Thriller", phrase:"thriller genre"},
+      {label:"Horror", phrase:"horror genre"},{label:"Mystery", phrase:"mystery genre"},
+      {label:"Crime", phrase:"crime genre"},{label:"Western", phrase:"western genre"},
+      {label:"Fantasy", phrase:"fantasy genre"},{label:"Science Fiction", phrase:"science fiction genre"},
+      {label:"Historical", phrase:"historical genre"},{label:"War", phrase:"war genre"},
+      {label:"Musical", phrase:"musical genre"}
+    ]},
+    {group:"Genre · non-fiction", loc:"brief", items:[
+      {label:"Documentary", phrase:"documentary style"},{label:"Docudrama", phrase:"docudrama style"},
+      {label:"Nature Film", phrase:"nature-film style"},{label:"Biography", phrase:"biographical style"}
+    ]},
+    {group:"Genre · experimental", loc:"brief", items:[
+      {label:"Avant-garde", phrase:"avant-garde style"},{label:"Art Film", phrase:"art-film style"},
+      {label:"Abstract Film", phrase:"abstract-film style"},{label:"Surrealist Film", phrase:"surrealist-film style"}
+    ]}
+  ];
+
+  // Film look — tri-state, shown under Tone
+  var LOOKLIB = [
+    {group:"Film look", loc:"brief", items:[
+      {label:"Super 8 Nostalgia", phrase:"Super 8 nostalgia look — grainy, warm, home-movie feel"},
+      {label:"16mm Indie", phrase:"16mm indie look — organic grain, handheld realism"},
+      {label:"Kodak Vision3 Hollywood", phrase:"Kodak Vision3 Hollywood look — modern blockbuster"},
+      {label:"70mm Epic", phrase:"70mm epic look — grand landscapes, sweeping shots"},
+      {label:"Bleach Bypass", phrase:"bleach bypass look — desaturated, high contrast"},
+      {label:"Technicolor", phrase:"Technicolor look — vibrant classic Hollywood colours"},
+      {label:"Film Noir", phrase:"film noir look — black & white, dramatic shadows"},
+      {label:"Vintage 1970s", phrase:"vintage 1970s look — warm tones, soft contrast"},
+      {label:"1980s Film", phrase:"1980s film look — neon colours, strong contrast"},
+      {label:"Modern Digital Cinema", phrase:"modern digital cinema — clean, sharp, high dynamic range"}
+    ]}
+  ];
+
+  // Camera, film stock & format — tri-state, shown under Camera options
+  var CAMERALIB = [
+    {group:"Sizes", items:["establishing / wide","medium","close-up","extreme close-up","macro","two-shot","insert"]},
+    {group:"Angles", items:["eye-level","low (heroic)","high","dutch / canted (tension)","over-the-shoulder","POV","top-down / overhead"]},
+    {group:"Moves", items:["push in","pull out","pan / whip pan","tracking","rotation / orbit","tilt","rack focus","slow-mo","rapid cut"]},
+    {group:"Atmosphere / FX", items:["speed lines","dust","spray","sparks","steam","light streaks","particles","lens flare","bokeh"]},
+    {group:"Film stock · colour", items:[
+      {label:"Kodak Vision3 500T", phrase:"shot on Kodak Vision3 500T — cinematic, low-light, warm highlights"},
+      {label:"Kodak Vision3 250D", phrase:"shot on Kodak Vision3 250D — daylight-balanced, natural colours"},
+      {label:"Kodak Vision3 50D", phrase:"shot on Kodak Vision3 50D — extremely fine grain, crisp image"}
+    ]},
+    {group:"Film stock · reversal", items:[
+      {label:"Kodachrome", phrase:"shot on Kodachrome reversal film — rich colours, archival quality"},
+      {label:"Fujifilm Velvia", phrase:"shot on Fujifilm Velvia — highly saturated landscapes"}
+    ]},
+    {group:"Film stock · B&W", items:[
+      {label:"Kodak Tri-X 400", phrase:"shot on Kodak Tri-X 400 black & white — gritty documentary look"},
+      {label:"Ilford HP5 Plus", phrase:"shot on Ilford HP5 Plus black & white — versatile classic contrast"},
+      {label:"Ilford Delta 100", phrase:"shot on Ilford Delta 100 black & white — fine grain and sharpness"}
+    ]},
+    {group:"Film format", items:[
+      {label:"8mm", phrase:"shot on 8mm film — home-movie vintage look"},
+      {label:"Super 8", phrase:"shot on Super 8 — nostalgic, grainy"},
+      {label:"16mm", phrase:"shot on 16mm — documentary / arthouse aesthetic"},
+      {label:"35mm", phrase:"shot on 35mm — traditional Hollywood standard"},
+      {label:"65mm / 70mm", phrase:"shot on 65mm / 70mm — ultra-high resolution, epic scale"},
+      {label:"IMAX 70mm", phrase:"shot on IMAX 70mm — massive image quality and immersion"}
+    ]}
+  ];
+
+  // every tri-state library, paired with the field it renders into
+  var ALL_LIBS = [[STYLELIB,"styleLib"],[GENRELIB,"filmTypeLib"],[LOOKLIB,"toneLib"],[CAMERALIB,"cameraLib"]];
   var EXCLUDE = [
     {label:"Recognisable faces", phrase:"recognisable hero characters or portrait subjects that pull focus from the treatment", on:false},
     {label:"Story moments", phrase:"narrative story beats or dramatic action", on:false},
@@ -771,7 +912,7 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
   // ---------- state ----------
   var DEF = {
     style:null, format:"16:9", background:"hero frame + tile grid", resolution:"2K",
-    grade:"teal & orange",
+    grade:"teal & orange", film:"", tone:[],
     lights:["golden hour","overcast soft","night / practicals"],
     lenses:["24mm wide","50mm","85mm portrait"],
     tiles:["texture & grain","atmosphere & haze","material samples"],
@@ -780,7 +921,7 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
   function freshState(){
     return {
       style:DEF.style, format:DEF.format, background:DEF.background, resolution:DEF.resolution,
-      grade:DEF.grade,
+      grade:DEF.grade, film:DEF.film, tone:DEF.tone.slice(),
       lights:DEF.lights.slice(), lenses:DEF.lenses.slice(), tiles:DEF.tiles.slice(),
       styleLib:{}, exclude:{}, refImgOn:false
     };
@@ -816,6 +957,12 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
   chipRow(document.getElementById("artStyle"), STYLE, {onpick:function(b,v,it){
     single(b,"artStyle"); state.style=(b.getAttribute("aria-pressed")==="true")?it:null; render();
   }});
+  chipRow(document.getElementById("filmType"), FILM, {onpick:function(b,v){
+    single(b,"filmType"); state.film=(b.getAttribute("aria-pressed")==="true")?v:""; render();
+  }});
+  chipRow(document.getElementById("tone"), TONE, {onpick:function(b,v){
+    multiToggle(b,state.tone,v); render();
+  }});
   chipRow(document.getElementById("paletteQ"), PALETTES, {q:true, onpick:function(b,v){
     document.getElementById("palette").value=v; markPaletteQ(v); render();
   }});
@@ -838,7 +985,6 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     });
   }
   function buildStyleLib(){
-    var host=document.getElementById("styleLib");
     function mkChip(label, phrase, title){
       var b=document.createElement("button"); b.type="button"; b.className="chip tri";
       b.dataset.phrase=phrase; b.textContent=label; if(title) b.title=title;
@@ -849,16 +995,28 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
       });
       return b;
     }
-    STYLELIB.forEach(function(g){
-      var gl=document.createElement("div"); gl.className="lib-group"; gl.textContent=g.group; host.appendChild(gl);
-      var row=document.createElement("div"); row.className="chips"; host.appendChild(row);
-      g.items.forEach(function(it){
-        var label=typeof it==="string"?it:it.label, phrase=typeof it==="string"?it:it.phrase;
-        row.appendChild(mkChip(label, phrase, typeof it==="string"?"":phrase));
+    // one tri-state store keyed by phrase, rendered into whichever field owns the group
+    ALL_LIBS.forEach(function(pair){
+      var lib=pair[0], host=document.getElementById(pair[1]);
+      if(!host) return;
+      lib.forEach(function(g){
+        var gl=document.createElement("div"); gl.className="lib-group"; gl.textContent=g.group; host.appendChild(gl);
+        var row=document.createElement("div"); row.className="chips"; host.appendChild(row);
+        g.items.forEach(function(it){
+          var label=typeof it==="string"?it:it.label, phrase=typeof it==="string"?it:it.phrase;
+          row.appendChild(mkChip(label, phrase, typeof it==="string"?"":phrase));
+        });
       });
     });
   }
   buildStyleLib();
+  // walk every library's phrases with their tri-state
+  function eachLibPhrase(fn){
+    ALL_LIBS.forEach(function(pair){ pair[0].forEach(function(g){ g.items.forEach(function(it){
+      var phrase=typeof it==="string"?it:it.phrase;
+      fn(phrase, state.styleLib[phrase]||0);
+    }); }); });
+  }
 
   // ---------- single-choice spec selectors ----------
   function radioRow(hostId, items, key, fmt){
@@ -930,7 +1088,7 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
   });
 
   // ---------- text inputs ----------
-  var TEXT_FIELDS=["sheetName","concept","lookName","lightDesc","timeWeather","lensDesc","texture","atmosphere","composition","touchstones","palette","styleCustom","excludeCustom","refImg"];
+  var TEXT_FIELDS=["sheetName","concept","lookName","lightDesc","timeWeather","lensDesc","texture","atmosphere","composition","touchstones","palette","styleCustom","filmCustom","toneCustom","excludeCustom","refImg"];
   TEXT_FIELDS.forEach(function(id){ document.getElementById(id).addEventListener("input",function(e){
      if(id==="palette") markPaletteQ(e.target.value);
      render();
@@ -947,10 +1105,17 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     if(state.style) return state.style.label.toLowerCase()+" ("+state.style.kw+")";
     return "[medium]";
   }
+  function filmText(){ return v("filmCustom") || state.film || ""; }
+  function toneText(){
+    var t=state.tone.slice(); if(v("toneCustom")) t.push(v("toneCustom"));
+    return t.join(", ");
+  }
   function suffixLine(){
     var bits=[];
     if(v("styleCustom")) bits.push(v("styleCustom"));
     else if(state.style) bits.push(state.style.kw);
+    if(filmText()) bits.push(filmText());
+    if(toneText()) bits.push(toneText()+" tone");
     if(state.grade) bits.push(state.grade+" grade");
     if(v("palette")) bits.push(v("palette"));
     if(v("lightDesc")) bits.push(v("lightDesc"));
@@ -959,10 +1124,7 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     if(v("atmosphere")) bits.push(v("atmosphere"));
     if(v("composition")) bits.push(v("composition"));
     var libInc=[];
-    STYLELIB.forEach(function(g){ g.items.forEach(function(it){
-      var phrase=typeof it==="string"?it:it.phrase;
-      if(state.styleLib[phrase]===1) libInc.push(phrase);
-    }); });
+    eachLibPhrase(function(phrase,st){ if(st===1) libInc.push(phrase); });
     if(libInc.length) bits.push(libInc.join(", "));
     if(v("touchstones")) bits.push("in the spirit of "+v("touchstones"));
     if(!bits.length) bits.push(ph("build the look above to generate a style suffix"));
@@ -992,6 +1154,11 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     if(look.length) L.push("The look: "+look.join(". ")+".");
     else L.push("The look: "+ph("describe lighting, lens, texture, atmosphere and composition")+".");
 
+    var ft=[];
+    if(filmText()) ft.push("Film type — "+filmText());
+    if(toneText()) ft.push("Tone — "+toneText());
+    if(ft.length) L.push(ft.join(". ")+".");
+
     if(v("touchstones")) L.push("Reference touchstones (echo the treatment, do not copy any shot): "+v("touchstones")+".");
     if(state.refImgOn && v("refImg")) L.push("Use the reference image "+v("refImg")+" as the basis for this look's grade, light quality and texture; match it closely in every tile.");
 
@@ -1016,10 +1183,9 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     if(tg.labels) L.push("Annotation labels: small neat callout labels naming each treatment, stock, focal length and light setup.");
 
     var libInc=[], libExc=[];
-    STYLELIB.forEach(function(g){ g.items.forEach(function(it){
-      var phrase=typeof it==="string"?it:it.phrase, s=state.styleLib[phrase];
-      if(s===1) libInc.push(phrase); else if(s===-1) libExc.push(phrase);
-    }); });
+    eachLibPhrase(function(phrase,st){
+      if(st===1) libInc.push(phrase); else if(st===-1) libExc.push(phrase);
+    });
     if(libInc.length) L.push("Style direction — also apply: "+libInc.join(", ")+".");
 
     L.push("Layout: arrange the sheet as a "+state.background+", clean and evenly spaced, so each tile reads on its own.");
@@ -1056,12 +1222,13 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
 
   // ---------- completeness ----------
   function completeness(){
-    var done=0, total=9;
+    var done=0, total=10;
     if(v("concept")) done++;
     if(v("lookName")) done++;
     if(v("lightDesc")) done++;
     if(v("lensDesc")) done++;
     if(v("texture")||v("atmosphere")) done++;
+    if(state.film||v("filmCustom")||state.tone.length||v("toneCustom")) done++;
     if(state.style||v("styleCustom")) done++;
     if(v("palette")) done++;
     if(v("sheetName")) done++;
@@ -1141,6 +1308,7 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     selectRadio("format",state.format); selectRadio("background",state.background);
     selectRadio("resolution",state.resolution); selectRadio("gradeFamily",state.grade);
     pressMany("lightChips", state.lights); pressMany("lensChips", state.lenses); pressMany("tileChips", state.tiles);
+    pressOne("filmType",""); pressMany("tone",[]);
     Array.prototype.forEach.call(document.getElementById("excludeChips").children,function(c){
       c.setAttribute("aria-pressed", String(!!state.exclude[c.dataset.value]));
     });
@@ -1161,9 +1329,11 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
       lightDesc:v("lightDesc"), timeWeather:v("timeWeather"), lensDesc:v("lensDesc"),
       texture:v("texture"), atmosphere:v("atmosphere"), composition:v("composition"),
       touchstones:v("touchstones"),
-      palette:v("palette"), styleCustom:v("styleCustom"), excludeCustom:v("excludeCustom"),
+      palette:v("palette"), styleCustom:v("styleCustom"),
+      filmCustom:v("filmCustom"), toneCustom:v("toneCustom"), excludeCustom:v("excludeCustom"),
       refImg:v("refImg"), refImgOn:state.refImgOn,
       style: state.style? state.style.label : null,
+      film:state.film, tone:state.tone.slice(),
       format:state.format, background:state.background, resolution:state.resolution,
       grade:state.grade,
       lights:state.lights.slice(), lenses:state.lenses.slice(), tiles:state.tiles.slice(),
@@ -1179,7 +1349,8 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     setVal("lightDesc",s.lightDesc); setVal("timeWeather",s.timeWeather); setVal("lensDesc",s.lensDesc);
     setVal("texture",s.texture); setVal("atmosphere",s.atmosphere); setVal("composition",s.composition);
     setVal("touchstones",s.touchstones);
-    setVal("palette",s.palette); setVal("styleCustom",s.styleCustom); setVal("excludeCustom",s.excludeCustom);
+    setVal("palette",s.palette); setVal("styleCustom",s.styleCustom);
+    setVal("filmCustom",s.filmCustom); setVal("toneCustom",s.toneCustom); setVal("excludeCustom",s.excludeCustom);
     setVal("refImg",s.refImg);
     state.refImgOn = !!s.refImgOn; refChk.checked=state.refImgOn; refUrl.style.display=state.refImgOn?"":"none";
 
@@ -1193,6 +1364,8 @@ TIPS: keep subjects generic and unremarkable so the eye reads the treatment, not
     state.background=s.background||DEF.background; selectRadio("background",state.background);
     state.resolution=s.resolution||DEF.resolution; selectRadio("resolution",state.resolution);
     state.grade=s.grade||DEF.grade; selectRadio("gradeFamily",state.grade);
+    state.film=s.film||""; pressOne("filmType",state.film);
+    state.tone=(s.tone||[]).slice(); pressMany("tone",state.tone);
 
     state.lights=(s.lights||DEF.lights).slice(); pressMany("lightChips",state.lights);
     state.lenses=(s.lenses||DEF.lenses).slice(); pressMany("lensChips",state.lenses);
