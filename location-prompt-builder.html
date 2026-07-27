@@ -1210,6 +1210,8 @@ TIPS: keep the place empty of characters and action so the environment reads · 
   }
 
   // ---------- save / load locations ----------
+  var APP_ID="backlot";
+  var APP_LABEL={modelsheet:"MODEL SHEET",fifteen:"FIFTEEN",lookbook:"LOOK BOOK",backlot:"BACK LOT"};
   var STORE_KEY="backlot.sheets.v1";
   var memStore=null;
   function loadStore(){
@@ -1267,6 +1269,14 @@ TIPS: keep the place empty of characters and action so the environment reads · 
       var b=document.getElementById("importBtn"), o=b.textContent;
       try{
         var parsed=JSON.parse(r.result);
+        // Refuse another builder's export — the shapes overlap just enough to
+        // half-load and look like it worked. Files with no app tag still pass.
+        if(parsed && parsed.app && parsed.app!==APP_ID){
+          var owner=APP_LABEL[parsed.app]||"another builder";
+          b.textContent="That's a "+owner+" file"; b.style.borderColor="#E5664A"; b.style.color="#E5664A";
+          setTimeout(function(){ b.textContent=o; b.style.borderColor=""; b.style.color=""; },2400);
+          return;
+        }
         var s=(parsed && parsed.data)? parsed.data : parsed;
         applyState(s);
         b.textContent="Imported ✓"; b.classList.add("done");

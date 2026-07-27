@@ -1136,6 +1136,8 @@ TIPS: keep lighting flat and even (no theatrical shadows that hide design) · ne
   }
 
   // ---------- save / load sheets ----------
+  var APP_ID="modelsheet";
+  var APP_LABEL={modelsheet:"MODEL SHEET",fifteen:"FIFTEEN",lookbook:"LOOK BOOK",backlot:"BACK LOT"};
   var STORE_KEY="modelsheet.sheets.v1";
   var memStore=null;
   function loadStore(){
@@ -1193,6 +1195,14 @@ TIPS: keep lighting flat and even (no theatrical shadows that hide design) · ne
       var b=document.getElementById("importBtn"), o=b.textContent;
       try{
         var parsed=JSON.parse(r.result);
+        // Refuse another builder's export — the shapes overlap just enough to
+        // half-load and look like it worked. Files with no app tag still pass.
+        if(parsed && parsed.app && parsed.app!==APP_ID){
+          var owner=APP_LABEL[parsed.app]||"another builder";
+          b.textContent="That's a "+owner+" file"; b.style.borderColor="#E5664A"; b.style.color="#E5664A";
+          setTimeout(function(){ b.textContent=o; b.style.borderColor=""; b.style.color=""; },2400);
+          return;
+        }
         var s=(parsed && parsed.data)? parsed.data : parsed;
         applyState(s);
         b.textContent="Imported ✓"; b.classList.add("done");
