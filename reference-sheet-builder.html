@@ -105,6 +105,19 @@
   }
   .chapbar b{color:var(--amber); font-weight:500}
 
+  /* contradiction notice */
+  .conflict{
+    border:1px solid rgba(229,102,74,.4); border-left:2px solid #E5664A;
+    background:rgba(229,102,74,.06); border-radius:var(--radius);
+    padding:12px 14px; margin-bottom:16px; font-size:13px; color:var(--dim); line-height:1.5;
+  }
+  .conflict b{color:#E5664A; font-weight:600; font-family:var(--mono); font-size:11px;
+    letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:6px}
+  .conflict ul{margin:0; padding-left:18px}
+  .conflict li{margin-bottom:4px}
+  .conflict li:last-child{margin-bottom:0}
+  .conflict em{color:var(--ink); font-style:normal}
+
   /* style-carries-down banner */
   .inherit{
     border:1px solid rgba(86,199,214,.3); border-left:2px solid var(--cyan);
@@ -304,6 +317,8 @@
       <span class="cdesc">Set the look once. Everything below inherits it, so a change here carries into the character and location prompts.</span>
       <span class="chapbar">LOOK <b id="pctStyle">0%</b> LOCKED</span>
     </div>
+
+    <div class="conflict" id="conflictBox" hidden></div>
 
     <div class="grid">
       <section>
@@ -877,9 +892,11 @@ TIPS: keep the place empty of characters and action so the environment reads · 
 (function(){
 
   // ============================================================ DATA
-  // style hints carried by the old per-tool presets; the shared style
-  // chapter owns style now, so these are parsed but not applied.
-  var BIB_LIB = {};
+  // Style-library hints for the scripture presets. Only the style presets read
+  // styleLib — the character and location presets carry the key but describe
+  // only, so this is the style builder's original value.
+  var BIB_LIB = {"biblical epic — divine atmosphere, dramatic skies, reverent compositions":1,
+                 "warm halation blooming around highlights":1};
   function P(o){ return o; }
   var STYLE = [
     {label:"Photoreal cinema", kw:"photorealistic cinematic frame, real optics, filmic dynamic range"},
@@ -1779,7 +1796,8 @@ TIPS: keep the place empty of characters and action so the environment reads · 
       b.addEventListener("click",function(){
         var cur=st.lib[phrase]||0, next = cur===0?1 : cur===1?-1 : 0;
         if(next===0) delete st.lib[phrase]; else st.lib[phrase]=next;
-        applyTri(b,next); render();
+        if(next===1) clearConflicts(phrase); else noteCleared([]);
+        renderTriStates(); render();
       });
       return b;
     }
@@ -1802,6 +1820,135 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     }); }); });
   }
 
+
+  // ============================================================ CONTRADICTIONS
+  // Within a set only one phrase may be INCLUDED (+). Excludes (−) never clash —
+  // ruling several things out at once is legitimate. Clicking a phrase always
+  // wins; whatever it contradicts is cleared and named in the notice.
+  var STOCKS = ["shot on Kodak Vision3 500T — cinematic, low-light, warm highlights",
+    "shot on Kodak Vision3 250D — daylight-balanced, natural colours",
+    "shot on Kodak Vision3 50D — extremely fine grain, crisp image",
+    "shot on Kodachrome reversal film — rich colours, archival quality",
+    "shot on Fujifilm Velvia — highly saturated landscapes",
+    "shot on Kodak Tri-X 400 black & white — gritty documentary look",
+    "shot on Ilford HP5 Plus black & white — versatile classic contrast",
+    "shot on Ilford Delta 100 black & white — fine grain and sharpness"];
+  var BW_STOCKS = STOCKS.slice(5);
+  var FORMATS_LIB = ["shot on 8mm film — home-movie vintage look","shot on Super 8 — nostalgic, grainy",
+    "shot on 16mm — documentary / arthouse aesthetic","shot on 35mm — traditional Hollywood standard",
+    "shot on 65mm / 70mm — ultra-high resolution, epic scale",
+    "shot on IMAX 70mm — massive image quality and immersion"];
+  var LOOKS = ["Super 8 nostalgia look — grainy, warm, home-movie feel",
+    "16mm indie look — organic grain, handheld realism",
+    "Kodak Vision3 Hollywood look — modern blockbuster",
+    "70mm epic look — grand landscapes, sweeping shots",
+    "bleach bypass look — desaturated, high contrast",
+    "Technicolor look — vibrant classic Hollywood colours",
+    "film noir look — black & white, dramatic shadows",
+    "vintage 1970s look — warm tones, soft contrast",
+    "1980s film look — neon colours, strong contrast",
+    "modern digital cinema — clean, sharp, high dynamic range"];
+  var ERAS = ["silent film — expressive acting, monochrome imagery",
+    "1920s cinema — ornate sets, theatrical staging",
+    "film noir — high-contrast shadows, mystery",
+    "1950s Technicolor — vibrant colours, glamorous lighting",
+    "1970s cinema — warm grain, zoom lenses, realism",
+    "1980s cinema — neon colours, bold contrast",
+    "1990s blockbuster — practical effects, energetic editing"];
+  var ANIMATION = ["anime feature film — expressive characters, cinematic composition",
+    "animated fantasy adventure — vibrant worlds, emotional storytelling",
+    "stop-motion film — handcrafted textures, tactile detail",
+    "painterly animated film — brushstroke aesthetics, storybook visuals"];
+  var DOCUMENTARY = ["BBC documentary — polished, informative, cinematic",
+    "nature documentary — macro shots, wildlife, environmental storytelling",
+    "observational documentary — fly-on-the-wall realism",
+    "war documentary — archival feel, handheld footage",
+    "investigative documentary — interviews, evidence-driven narrative"];
+  var COLOUR_FORWARD = ["Technicolor look — vibrant classic Hollywood colours",
+    "1950s Technicolor — vibrant colours, glamorous lighting",
+    "shot on Fujifilm Velvia — highly saturated landscapes",
+    "shot on Kodachrome reversal film — rich colours, archival quality"];
+
+  var CONFLICT_SETS = [
+    {name:"shadow rendering", items:["crushed blacks with deep, dense shadow detail",
+                                     "lifted milky shadows, low-contrast filmic toe"]},
+    {name:"grain", items:["pronounced organic film grain",
+                          "clean clinical rendering, no grain, precise edges"]},
+    {name:"lens character", items:["vintage uncoated glass, soft edges and low micro-contrast",
+                                   "clean clinical rendering, no grain, precise edges"]},
+    {name:"plane of focus", items:["very shallow depth of field, creamy background falloff",
+                                   "deep focus, everything sharp from foreground to horizon",
+                                   "tilt-shift plane of focus"]},
+    {name:"film stock", items:STOCKS},
+    {name:"film format", items:FORMATS_LIB},
+    {name:"film look", items:LOOKS},
+    {name:"era", items:ERAS}
+  ];
+  var PHOTO_MEDIA = ["Photoreal cinema","35mm film","Digital cinema","Documentary photo","Editorial fashion"];
+  var DRAWN_MEDIA = ["Painterly concept art","3D animated render","2D animation"];
+
+  function labelFor(phrase){
+    var found=phrase;
+    ALL_LIBS.forEach(function(pair){ pair[0].forEach(function(g){ g.items.forEach(function(it){
+      if(typeof it!=="string" && it.phrase===phrase) found=it.label;
+    }); }); });
+    return found;
+  }
+  var lastCleared=[], clearedTimer=null;
+  function noteCleared(list){
+    lastCleared=list;
+    if(clearedTimer) clearTimeout(clearedTimer);
+    if(list.length) clearedTimer=setTimeout(function(){ lastCleared=[]; renderConflicts(); }, 7000);
+  }
+  // clicking `phrase` on wins — drop anything it contradicts
+  function clearConflicts(phrase){
+    var cleared=[];
+    CONFLICT_SETS.forEach(function(set){
+      if(set.items.indexOf(phrase)<0) return;
+      set.items.forEach(function(other){
+        if(other!==phrase && st.lib[other]===1){
+          delete st.lib[other];
+          cleared.push({label:labelFor(other), because:labelFor(phrase), why:set.name});
+        }
+      });
+    });
+    noteCleared(cleared);
+  }
+  // mismatches that can't be auto-resolved — say so rather than guess
+  function crossConflicts(){
+    var out=[], inc={};
+    eachLibPhrase(function(p,s){ if(s===1) inc[p]=1; });
+    var medium = st.style? st.style.label : null;
+    var anim = ANIMATION.filter(function(p){return inc[p];}).map(labelFor);
+    var doc  = DOCUMENTARY.filter(function(p){return inc[p];}).map(labelFor);
+    if(medium && PHOTO_MEDIA.indexOf(medium)>-1 && anim.length)
+      out.push('Medium is <em>'+medium+'</em> but <em>'+anim.join(", ")+'</em> is switched on — pick an animated medium or drop the animation style.');
+    if(medium && DRAWN_MEDIA.indexOf(medium)>-1 && doc.length)
+      out.push('Medium is <em>'+medium+'</em> but <em>'+doc.join(", ")+'</em> is switched on — documentary styles read as live action.');
+    var bw = BW_STOCKS.filter(function(p){return inc[p];}).map(labelFor);
+    if(bw.length && st.grade!=="monochrome")
+      out.push('<em>'+bw.join(", ")+'</em> is black &amp; white but the colour grade is <em>'+st.grade+'</em> — set the grade to monochrome, or choose a colour stock.');
+    var vivid = COLOUR_FORWARD.filter(function(p){return inc[p];}).map(labelFor);
+    if(vivid.length && st.grade==="monochrome")
+      out.push('Grade is <em>monochrome</em> but <em>'+vivid.join(", ")+'</em> is a colour look — they cancel out.');
+    return out;
+  }
+  function renderConflicts(){
+    var box=el("conflictBox"), parts=[];
+    if(lastCleared.length){
+      parts.push('<b>Contradiction resolved</b><ul>'+lastCleared.map(function(c){
+        return '<li>Turned off <em>'+c.label+'</em> — it contradicts <em>'+c.because+'</em> ('+c.why+').</li>';
+      }).join("")+'</ul>');
+    }
+    var cross=crossConflicts();
+    if(cross.length){
+      parts.push((lastCleared.length?'<b style="margin-top:10px">Still clashing</b>':'<b>Clashing choices</b>')
+        +'<ul>'+cross.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>');
+    }
+    box.innerHTML=parts.join("");
+    box.hidden = parts.length===0;
+  }
+
   // ============================================================ WIRE CONTROLS
   // --- style ---
   radioRow("format", FORMATS, function(x){ st.format=x; });
@@ -1810,7 +1957,16 @@ TIPS: keep the place empty of characters and action so the environment reads · 
   radioRow("gradeFamily", GRADES, function(x){ st.grade=x; });
   radioRow("refLight", REFLIGHT, function(x){ st.refLight=x; });
   chipRow("artStyle", STYLE, {onpick:function(b,x,it){
-    single(b,"artStyle"); st.style=(b.getAttribute("aria-pressed")==="true")?it:null; render(); }});
+    single(b,"artStyle"); st.style=(b.getAttribute("aria-pressed")==="true")?it:null;
+    // choosing a live-action medium drops animation styles, and vice versa
+    var lbl=st.style? st.style.label : null, drop=[];
+    if(lbl && PHOTO_MEDIA.indexOf(lbl)>-1) drop=ANIMATION;
+    else if(lbl && DRAWN_MEDIA.indexOf(lbl)>-1) drop=DOCUMENTARY;
+    var cleared=[];
+    drop.forEach(function(p){ if(st.lib[p]===1){ delete st.lib[p];
+      cleared.push({label:labelFor(p), because:lbl, why:"medium"}); } });
+    noteCleared(cleared);
+    renderTriStates(); render(); }});
   chipRow("filmType", FILM, {onpick:function(b,x){
     single(b,"filmType"); st.film=(b.getAttribute("aria-pressed")==="true")?x:""; render(); }});
   chipRow("tone", TONE, {onpick:function(b,x){ multiToggle(b,st.tone,x); render(); }});
@@ -2161,6 +2317,8 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     el("mGrade").textContent = st.grade;
     el("mRes").textContent = st.resolution;
 
+    renderConflicts();
+
     var ps=pctStyle(), pc=pctChar(), pl=pctLoc();
     el("pctStyle").textContent=ps+"%"; el("navPctStyle").textContent=ps+"%";
     el("pctChar").textContent=pc+"%";  el("navPctChar").textContent=pc+"%";
@@ -2230,7 +2388,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
                "scaleLayout","period","lightAtmo","loExcludeCustom","loRefImg"];
   el("stReset").addEventListener("click",function(){
     ST_TEXT.forEach(function(id){ setVal(id,""); });
-    st=clone(ST_DEF); ST_EXCLUDE.forEach(function(e){ st.exclude[e.label]=e.on; });
+    st=clone(ST_DEF); ST_EXCLUDE.forEach(function(e){ st.exclude[e.label]=e.on; }); noteCleared([]);
     ST_TOGGLES.forEach(function(t){ stg[t.id]=t.on; });
     syncStyle(); render();
   });
@@ -2270,7 +2428,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     st.lenses=(p.lenses||ST_DEF.lenses).slice();
     st.tiles=(p.tiles||ST_DEF.tiles).slice();
     st.lib = Object.assign({}, p.styleLib||{});
-    syncStyle(); render();
+    noteCleared([]); syncStyle(); render();
   }
   // character / location presets fill description only — style stays put
   function applyCharPreset(p){
@@ -2382,7 +2540,7 @@ TIPS: keep the place empty of characters and action so the environment reads · 
     if(Lc.toggles) Object.keys(log).forEach(function(k){ if(k in Lc.toggles) log[k]=!!Lc.toggles[k]; });
 
     el("helperChk").checked = s.helper!==false;
-    syncAll(); render();
+    noteCleared([]); syncAll(); render();
   }
 
   // ============================================================ SAVE / EXPORT / IMPORT
